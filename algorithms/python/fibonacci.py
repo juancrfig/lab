@@ -1,0 +1,6 @@
+def recursive_fibonacci(n):
+    if n < 2:
+        return n
+    return ( recursive_fibonacci(n - 1) + recursive_fibonacci(n - 2) )
+
+

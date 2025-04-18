@@ -1,0 +1,32 @@
+#!/bin/bash
+
+show_info() {
+  echo "First arg: $1"
+  echo "All args: $@"
+  echo "Number of args: $#"
+}
+
+show_info one two three
+
+# Always use local variables inside functions
+my_function() {
+  local name="Changed"
+  echo "Inside: $name"
+}
+
+name="Original"
+my_function
+echo "Outside: $name"
+# Still "Original"
+
+# Using functions with arguments
+is_even() {
+  local num="$1"
+  (( num % 2 == 0 ))
+}
+
+if is_even 4; then
+    echo "4 is even"
+fi
+
+

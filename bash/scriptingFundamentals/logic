@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Run the second command only if the first success
+cd mydir && ls randomFileInsideMyDir.txt
+
+# Run the second command only if the first fails
+cd mydir || mkdir mydir
+
+# They work by checking the exit codes of the commands. $?
+
+# String Comparison
+str1="hello"
+str2="world"
+
+[[ str1 == str2 ]] && echo "Equal!"
+[[ str1 != str2 ]] && echo "Not equal!"
+
+# Emptyness
+[[ -z "$name" ]] && echo "Empty"
+[[ -n "$name" ]] && echo "Not Empty"
+
+# Arithmetic Comparison
+number=5
+if (( count > 10)); then 
+  echo "Greater than 10!"
+fi
+
+# File Tests
+file="/etc/os-release"
+
+[[ -f "$file" ]] && echo "Detected!"   # Should echo successfully
+
+file="/etc/os-releasessss"
+[[ -f "$file" ]] && echo "Detected!" || echo "Not detected!" # not detected expected

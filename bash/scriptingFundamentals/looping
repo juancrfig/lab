@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for file in *.txt; do
+  # IMPORTANT TO HANDLE CASES WHERE THE FILE DOESN't EXIST
+  [[ -f "$file" ]] || continue
+  echo "Processing: $file"
+done
+
+# Processing specific fields of a file
+while IFS=: read -r user _ uid _ _ _ shell; do
+  echo "$user (UID $uid) uses $shell"
+done < /etc/passwd

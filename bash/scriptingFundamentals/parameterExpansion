@@ -1,0 +1,38 @@
+#!/bin/bash
+
+
+# seach and replace
+echo "hello" | sed 's/hello/hi'
+
+# extract fields
+echo "one two three" | awk '{print $2}'
+
+# translate characters
+echo "hello" | tr 'a-z' 'A-Z'
+
+# extract columns
+echo "a:b:c" | cut -d: -f2
+
+
+# External command (spawns a new process)
+filename=${echo "document.txt" | sed 's/.txt//'}
+echo ${filename}
+
+# Parameter expansion (built-in, faster)
+filename="document.txt"
+echo "${filename%.txt}"
+
+# Search and replace
+text="hello world world"
+
+# Replace the first match
+echo "${text/world/hi}"  # hello hi world
+
+# Replace all matches
+echo "${text//world/hi}" # hello hi hi 
+
+# Case Transformation
+text="hello world"
+echo "${text^}"  # Capitalizes first word
+echo "${text^^}" # Capitalizes all the words
+echo "${text,,}"       # Works same but lowercasing

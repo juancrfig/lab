@@ -34,3 +34,20 @@ echo "Exit code: $?"
 ls /nonexistentfile
 echo "Exit code: $?"
 # 2 (failure)
+
+
+# Default values
+name=""
+echo "Hello, ${name:-User}"
+echo "$name"   # This variable is still empty
+
+# This syntax sets the variable if it's empty
+echo "Hello, ${name:=Juanes}"
+echo "$name"    # Now name contains the string Juanes
+
+# Removing Suffixes
+filename="document.txt"
+echo "${filename%.txt}"
+
+
+google google.com
