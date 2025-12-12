@@ -1,2 +1,2 @@
 # lab
-True learning occurs through practice, rather than passive observation. Here you'll find a collection of my code snippets, exercises, and experiments which I use to explore and gain hands-on experience.
+True learning occurs through practice, rather than passive observation. Here you'll find a collection of my code snippets, exercises, and experiments.
