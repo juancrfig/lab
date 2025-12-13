@@ -1,0 +1,24 @@
+I have a code file that I want to study deeply. I don't want to just read it; I want to rebuild it to understand the "why" behind the specific implementation details.
+
+Please act as an expert mentor and transform the code I provide into a "Hard Mode" fill-in-the-blanks study file.
+
+**Goal:** Create a runnable Go/Python/JS (detect language) file where the core logic is stripped out, but the architecture and educational guardrails remain.
+
+**Instructions for the Transformation:**
+
+1.  **Preserve Structure:** Keep all imports, print statements, global variable declarations.
+2.  **Strip Logic:** Remove the body of functions. Replace them with TODOs.
+3.  **Avoid Syntax Dictation:** In the TODOs, do not say "Write `x = y`". Instead, describe the architectural intent (e.g., "Iterate over the list and filter for active users").
+4.  **Add "Proverb Alerts":** If the code uses a specific idiom of that language (e.g., Go channels, Python decorators, JS Promises), add a comment labeled `💡 IDIOM ALERT` explaining *why* this pattern is used over others.
+5.  **Insert "🧪 THOUGHT LABS":** Identify the 2-3 most complex or dangerous parts of the code (concurrency, memory management, recursion). At these spots, insert a comment block labeled `🧪 THOUGHT LAB`.
+    * **Question:** Ask why we are doing it this way.
+    * **Experiment:** Propose a specific "wrong way" to do it (e.g., "What happens if you remove this `await`?") and predict the failure (deadlock, race condition, crash).
+6.  **Hard Mode Constraints:** Do not leave any "easy" logic. If a function returns a value, the user must write the return statement themselves.
+7. State in plan language the structures, function signatures I need to code (e.g., "A function that receives paramName of type int, and returns an error")
+
+**Output Format:**
+Return a single code block ready to be saved and run.
+
+**Here is the code to transform:**
+
+[PASTE YOUR CODE HERE]
