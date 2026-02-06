@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Link dotfiles to home directory
+
+ln -sf ~/dotfiles/.bashrc ~/.bashrc
+
+echo "Dotfiles linked!"

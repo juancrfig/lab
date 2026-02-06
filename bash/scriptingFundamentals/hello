@@ -1,0 +1,5 @@
+#!/bin/bash  
+# The shebang, it tells the system what interpreter to use to execute the source code
+
+
+echo "Hello, world!"
