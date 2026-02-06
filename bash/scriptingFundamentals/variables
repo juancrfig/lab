@@ -1,0 +1,36 @@
+#!/bin/bash
+
+
+touch "file with spaces.txt"
+
+file="my important file.txt"
+
+# Here bash takes each word as a separate file
+rm $file
+
+# Correct way
+rm "$file"
+
+
+# ==============================
+#       Script Arguments
+# =============================
+
+echo "Script name:          $0"
+echo "Fist argument:        $1"
+echo "n argument:           $n"
+echo "All arguments:        $@"
+echo "Number of Arguments:  $#"
+
+
+# ==============================
+#         Exit Status
+# ==============================
+
+ls /etc/passwd
+echo "Exit code: $?"
+# 0 (success)
+
+ls /nonexistentfile
+echo "Exit code: $?"
+# 2 (failure)
