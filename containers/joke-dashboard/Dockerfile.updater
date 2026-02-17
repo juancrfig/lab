@@ -1,11 +1,21 @@
-FROM ubuntu:24.04
+# Stage 1: Build & Preparation 
+FROM ubuntu:24.04 AS builder
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl ca-certificates && \ 
-    rm -rf /var/lib/apt/lists/* 
-
-WORKDIR /app
+WORKDIR /build
 COPY updater .
 RUN chmod +x updater
 
+# Stage 2: Minimal Runtime 
+FROM alpine:3.21
+# Install only runtime dependencies
+RUN apk add --no-cache curl ca-certificates bash
+# Create non-root user matching UUID 101 (nginx unprivileged default)
+RUN addgroup -g 101 appgroup && adduser -u 101 -G appgropup -D appuser
+
+WORKDIR /app
+
+# Copy prepared script from builder stage
+COPY --from=builder --chown=appuser:appgroup /build/updater .
+
+USER appuser
 CMD ["./updater"]
