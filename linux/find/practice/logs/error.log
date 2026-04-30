@@ -1,0 +1,11 @@
+[ERROR]    2026-04-30 09:01:12 - DB connection timeout after 30s
+[ERROR]    2026-04-30 09:01:19 - DB connection timeout after 30s (retry)
+[CRITICAL] 2026-04-30 09:01:25 - Max retries exceeded, circuit breaker OPEN
+[ERROR]    2026-04-30 10:22:04 - Failed to send email: SMTP auth failed
+[WARNING]  2026-04-30 10:55:10 - Disk usage at 91% on /dev/sda1
+[ERROR]    2026-04-30 11:05:33 - TypeError in route /api/orders
+[WARNING]  2026-04-30 11:30:00 - SSL certificate expires in 14 days
+[CRITICAL] 2026-04-30 12:00:01 - Out of memory: process killed (OOM)
+[ERROR]    2026-04-30 12:01:15 - Service restart failed on attempt 1
+[ERROR]    2026-04-30 12:01:30 - Service restart failed on attempt 2
+[INFO]     2026-04-30 12:02:00 - Service recovered after manual intervention

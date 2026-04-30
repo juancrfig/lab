@@ -1,0 +1,4 @@
+Meeting notes - 2026-04-30
+- Discussed deployment pipeline
+- Action: set up CI/CD
+- Owner: Juanes

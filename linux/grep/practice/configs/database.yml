@@ -1,0 +1,20 @@
+production:
+  adapter: postgresql
+  host: db.internal
+  port: 5432
+  database: appdb
+  username: appuser
+  password: s3cr3tDbP@ssword
+  pool: 10
+  timeout: 5000
+  ssl: true
+
+staging:
+  adapter: postgresql
+  host: db-staging.internal
+  port: 5432
+  database: appdb_staging
+  username: appuser
+  password: stagingP@ss!
+  pool: 5
+  timeout: 5000
