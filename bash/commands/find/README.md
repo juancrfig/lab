@@ -1,141 +1,164 @@
-# `find` Command — Challenges (80/20)
+# `find` — Integrated Challenges (80/20)
 
-> Go to the `practice/` folder and complete each challenge in order.
-> Each one teaches a core `find` pattern you'll use constantly as a DevOps engineer.
-
-## Setup
+> Each challenge blends `find` with pipes and other commands.
+> Practice inside the `practice/` folder.
 
 ```bash
 cd bash/commands/find/practice
 ```
 
-That's it. All the files you need are already there.
-
 ---
 
-## Challenge 1 — Find by Name
+## Challenge 1 — How many `.doc` files exist?
 
-**Goal:** List every `.doc` file inside `practice/` recursively.
+Find all `.doc` files and **count** them.
 
 ```
-Expected output (3 files):
-./docs/report.doc
-./docs/draft.doc
-./archive/old-draft.doc
+Expected: 3
 ```
 
 <details>
 <summary>Solution</summary>
 
 ```bash
-find . -name "*.doc"
+find . -name "*.doc" | wc -l
+```
+
+> `wc -l` counts lines. Since `find` prints one result per line, it counts files.
+
+</details>
+
+---
+
+## Challenge 2 — How much space do your `.log` files take?
+
+Find all `.log` files and show the **total disk usage**.
+
+<details>
+<summary>Solution</summary>
+
+```bash
+find . -name "*.log" | xargs du -sh
+```
+
+> `xargs` feeds each `find` result as arguments to `du -sh`.
+
+</details>
+
+---
+
+## Challenge 3 — Which files were modified in the last day?
+
+List files modified in the last 24h, sorted alphabetically.
+
+<details>
+<summary>Solution</summary>
+
+```bash
+find . -type f -mtime -1 | sort
 ```
 
 </details>
 
 ---
 
-## Challenge 2 — Find by Type
+## Challenge 4 — Find all shell scripts containing the word `ERROR`
 
-**Goal 1:** List only files (not directories).
-**Goal 2:** List only directories.
+Search only inside `.sh` files recursively.
+
+> 💡 This is the real-world pattern: narrow by file type first, then search inside.
 
 <details>
 <summary>Solution</summary>
 
 ```bash
-find . -type f   # only files
-find . -type d   # only directories
+find . -name "*.sh" | xargs grep -l "ERROR"
 ```
+
+> `-l` tells grep to print only the **filename**, not the matching lines.
 
 </details>
 
 ---
 
-## Challenge 3 — Find + Delete
+## Challenge 5 — Which folder takes the most space?
 
-**Goal:** Delete all `.doc` files recursively without touching any other file.
-
-> 💡 Why not `rm *.doc`? The shell glob only matches in the current directory — it won't go into subdirectories.
+Show disk usage per top-level subdirectory, sorted from smallest to largest.
 
 <details>
 <summary>Solution</summary>
 
 ```bash
-# Preview first (dry run)
+du -sh */ | sort -h
+```
+
+> `du -sh */` shows human-readable size of each directory.
+> `sort -h` sorts by human-readable numbers (K < M < G).
+
+</details>
+
+---
+
+## Challenge 6 — Delete all `.doc` files recursively
+
+First preview what will be deleted, then delete.
+
+<details>
+<summary>Solution</summary>
+
+```bash
+# Step 1: preview
 find . -name "*.doc"
 
-# Then delete
+# Step 2: delete
 find . -name "*.doc" -delete
 ```
 
-</details>
-
----
-
-## Challenge 4 — Find by Size
-
-**Goal 1:** Find files larger than 1KB.
-**Goal 2:** Find files smaller than 1KB.
-
-<details>
-<summary>Solution</summary>
-
-```bash
-find . -type f -size +1k   # larger than 1KB
-find . -type f -size -1k   # smaller than 1KB
-```
+> Why not `rm *.doc`? The glob `*.doc` only matches in the **current directory** — it won't recurse into subdirectories.
 
 </details>
 
 ---
 
-## Challenge 5 — Find by Modification Time
+## Challenge 7 — Find the 3 largest files in the tree
 
-**Goal 1:** Find files modified in the last 24 hours.
-**Goal 2:** Find files NOT modified in the last 7 days (stale files).
+List all files with their sizes, then show only the top 3.
 
 <details>
 <summary>Solution</summary>
 
 ```bash
-find . -mtime -1   # modified in last 24h
-find . -mtime +7   # not touched in more than 7 days
+find . -type f | xargs du -sh | sort -rh | head -3
 ```
+
+> `sort -rh` = sort descending by human-readable size. `head -3` = take top 3.
 
 </details>
 
 ---
 
-## Challenge 6 — Find + Execute
+## 💿 Disk Space Challenge — How much total space is used on your system?
 
-**Goal:** Print the contents of every `.log` file found recursively.
-
-<details>
-<summary>Solution</summary>
+Three commands, three levels of detail:
 
 ```bash
-find . -name "*.log" -exec cat {} \;
+# 1. Overall disk usage of the whole system (partitions view)
+df -h
+
+# 2. How much space is used in the current directory (summary)
+du -sh .
+
+# 3. Breakdown by each subdirectory, sorted
+du -sh */ | sort -h
 ```
 
-> `{}` is replaced by each matched file path. `\;` ends the `-exec` block.
+| Command | Answers |
+|---|---|
+| `df -h` | Total space, used, available per partition |
+| `du -sh .` | How much this folder weighs in total |
+| `du -sh */ \| sort -h` | Which subfolder is eating the most space |
 
-</details>
-
----
-
-## Challenge 7 — Case-Insensitive Search
-
-**Goal:** Find all `.LOG` files regardless of case (`.log`, `.LOG`, `.Log` — all match).
-
-<details>
-<summary>Solution</summary>
-
-```bash
-find . -iname "*.log"
-```
-
-</details>
+> **Quick answer to "how much disk is used?"** → `df -h` — look at the `Use%` column for your main partition (`/`).
 
 ---
 
@@ -143,11 +166,10 @@ find . -iname "*.log"
 
 | Goal | Command |
 |---|---|
-| Find by name | `find . -name "*.ext"` |
-| Find only files | `find . -type f` |
-| Find only dirs | `find . -type d` |
-| Delete matches | `find . -name "*.ext" -delete` |
-| Larger than X | `find . -size +1M` |
-| Modified in last 24h | `find . -mtime -1` |
-| Run command on results | `find . -name "*.x" -exec cmd {} \;` |
-| Case-insensitive name | `find . -iname "*.ext"` |
+| Count found files | `find . -name "*.ext" \| wc -l` |
+| Size of found files | `find . -name "*.ext" \| xargs du -sh` |
+| Find files containing text | `find . -name "*.ext" \| xargs grep -l "word"` |
+| Largest files | `find . -type f \| xargs du -sh \| sort -rh \| head -5` |
+| Delete by extension | `find . -name "*.ext" -delete` |
+| Space per subdirectory | `du -sh */ \| sort -h` |
+| Total system disk usage | `df -h` |
