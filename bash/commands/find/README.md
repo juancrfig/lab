@@ -1,92 +1,141 @@
-# `find` Command Exercises (80/20)
+# `find` Command — Challenges (80/20)
 
-> Master the 20% of `find` features that cover 80% of real-world use cases.
+> Go to the `practice/` folder and complete each challenge in order.
+> Each one teaches a core `find` pattern you'll use constantly as a DevOps engineer.
 
 ## Setup
 
-Create a test environment before starting:
-
 ```bash
-mkdir -p ~/find-practice/{logs,docs,scripts}
-touch ~/find-practice/logs/{app.log,error.log,old.log}
-touch ~/find-practice/docs/{report.doc,notes.txt,draft.doc}
-touch ~/find-practice/scripts/{deploy.sh,backup.sh}
+cd bash/commands/find/practice
 ```
+
+That's it. All the files you need are already there.
 
 ---
 
-## Exercise 1 — Find by Name
+## Challenge 1 — Find by Name
 
-```bash
-find ~/find-practice -name "*.doc"
+**Goal:** List every `.doc` file inside `practice/` recursively.
+
+```
+Expected output (3 files):
+./docs/report.doc
+./docs/draft.doc
+./archive/old-draft.doc
 ```
 
-✅ Goal: List all `.doc` files recursively.
+<details>
+<summary>Solution</summary>
+
+```bash
+find . -name "*.doc"
+```
+
+</details>
 
 ---
 
-## Exercise 2 — Find by Type
+## Challenge 2 — Find by Type
+
+**Goal 1:** List only files (not directories).
+**Goal 2:** List only directories.
+
+<details>
+<summary>Solution</summary>
 
 ```bash
-find ~/find-practice -type f   # only files
-find ~/find-practice -type d   # only directories
+find . -type f   # only files
+find . -type d   # only directories
 ```
 
-✅ Goal: Understand the difference between files and dirs.
+</details>
 
 ---
 
-## Exercise 3 — Find + Delete
+## Challenge 3 — Find + Delete
+
+**Goal:** Delete all `.doc` files recursively without touching any other file.
+
+> 💡 Why not `rm *.doc`? The shell glob only matches in the current directory — it won't go into subdirectories.
+
+<details>
+<summary>Solution</summary>
 
 ```bash
-find ~/find-practice -name "*.doc" -delete
+# Preview first (dry run)
+find . -name "*.doc"
+
+# Then delete
+find . -name "*.doc" -delete
 ```
 
-✅ Goal: Remove all `.doc` files recursively.
-
-> **Why not `rm *.doc`?** The shell glob `*.doc` only matches files in the current directory — it doesn't cross into subdirectories. `find` is the correct tool for recursive deletion.
+</details>
 
 ---
 
-## Exercise 4 — Find by Size
+## Challenge 4 — Find by Size
+
+**Goal 1:** Find files larger than 1KB.
+**Goal 2:** Find files smaller than 1KB.
+
+<details>
+<summary>Solution</summary>
 
 ```bash
-find ~/find-practice -size +1k   # files larger than 1KB
-find ~/find-practice -size -1k   # files smaller than 1KB
+find . -type f -size +1k   # larger than 1KB
+find . -type f -size -1k   # smaller than 1KB
 ```
 
-✅ Goal: Filter files by size — useful for finding large log files.
+</details>
 
 ---
 
-## Exercise 5 — Find by Modification Time
+## Challenge 5 — Find by Modification Time
+
+**Goal 1:** Find files modified in the last 24 hours.
+**Goal 2:** Find files NOT modified in the last 7 days (stale files).
+
+<details>
+<summary>Solution</summary>
 
 ```bash
-find ~/find-practice -mtime -1   # modified in the last 24h
-find ~/find-practice -mtime +7   # modified more than 7 days ago
+find . -mtime -1   # modified in last 24h
+find . -mtime +7   # not touched in more than 7 days
 ```
 
-✅ Goal: Locate recently changed or stale files.
+</details>
 
 ---
 
-## Exercise 6 — Find + Execute a Command
+## Challenge 6 — Find + Execute
+
+**Goal:** Print the contents of every `.log` file found recursively.
+
+<details>
+<summary>Solution</summary>
 
 ```bash
-find ~/find-practice -name "*.log" -exec cat {} \;
+find . -name "*.log" -exec cat {} \;
 ```
 
-✅ Goal: Run a command on every result — the most powerful pattern.
+> `{}` is replaced by each matched file path. `\;` ends the `-exec` block.
+
+</details>
 
 ---
 
-## Exercise 7 — Case-Insensitive Search
+## Challenge 7 — Case-Insensitive Search
+
+**Goal:** Find all `.LOG` files regardless of case (`.log`, `.LOG`, `.Log` — all match).
+
+<details>
+<summary>Solution</summary>
 
 ```bash
-find ~/find-practice -iname "*.LOG"
+find . -iname "*.log"
 ```
 
-✅ Goal: Match filenames regardless of uppercase/lowercase.
+</details>
 
 ---
 
@@ -99,5 +148,6 @@ find ~/find-practice -iname "*.LOG"
 | Find only dirs | `find . -type d` |
 | Delete matches | `find . -name "*.ext" -delete` |
 | Larger than X | `find . -size +1M` |
-| Modified recently | `find . -mtime -1` |
+| Modified in last 24h | `find . -mtime -1` |
 | Run command on results | `find . -name "*.x" -exec cmd {} \;` |
+| Case-insensitive name | `find . -iname "*.ext"` |

@@ -1,0 +1,4 @@
+[ERROR] 2026-04-30 09:45:03 - Connection timeout: db.host:5432
+[ERROR] 2026-04-30 09:45:10 - Retry attempt 1 failed
+[ERROR] 2026-04-30 09:45:17 - Retry attempt 2 failed
+[WARN]  2026-04-30 09:46:00 - Falling back to read replica
