@@ -1,0 +1,7 @@
+[INFO]  2026-04-30 08:00:01 - Server started on port 3000
+[WARN]  2026-04-30 08:45:00 - Response time high: 1800ms
+[ERROR] 2026-04-30 09:01:12 - Connection timeout: db.internal:5432 (attempt 1)
+[ERROR] 2026-04-30 09:01:19 - Connection timeout: db.internal:5432 (attempt 2)
+[INFO]  2026-04-30 09:02:00 - Reconnected to database
+[ERROR] 2026-04-30 11:05:33 - Unhandled exception in /api/orders: TypeError
+[INFO]  2026-04-30 11:06:00 - Server recovered
