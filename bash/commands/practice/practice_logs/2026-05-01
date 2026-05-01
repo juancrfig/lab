@@ -23,3 +23,24 @@ echo "Find all .env and .conf files under configs/"
 
 files=$(find ~/Projects/lab/bash/commands/practice/configs/ -name "*.env" -o -name "*.conf")
 echo "$files"
+
+echo "======================================================================================"
+
+echo "How many ERROR lines are in app.log"
+echo "$(find ~/Projects/lab/bash/commands/practice/ -name "app.log" | xargs grep ERROR -c)"
+
+echo "===================================================="
+echo "Show all 500 status lines from nginx-access.log"
+echo "$(find ~/Projects/lab/bash/commands/practice/ -name "nginx-access.log" | xargs grep 500)"
+
+echo "==================================="
+echo "Search all log files for the word timeout. Show filenames and line numbers"
+echo "$(find ~/Projects/lab/bash/commands/practice/ -type f | xargs grep "timeout" -n)"
+
+echo "====================================="
+echo "Find any line across all practice/ mentioning a password, secret or JWT"
+grep -Eri "password|secret|JWT"  ~/Projects/lab/bash/commands/practice/
+
+echo "========================================="
+echo "Show only lines related to the failed deployment v1.4.0"
+find ~/Projects/lab/bash/commands/practice/ -name "deploy.log" | xargs grep v1.4.0
