@@ -14,7 +14,7 @@ find practice/ -type f | wc -l
 find practice/ -name "*.log" | xargs du -sh
 
 # 3
-grep "ERROR" directory -l
+find practice/scripts/ -name "*.sh" | xargs grep -l "ERROR"
 # -l = list filenames only, not matching lines
 
 # 4
@@ -65,9 +65,21 @@ cut -d' ' -f1 practice/logs/nginx-access.log | sort | uniq -c | sort -rn
 grep -oE ' [0-9]{3} ' practice/logs/nginx-access.log | tr -d ' ' | sort -u
 # -o prints only matched part. sort -u = sort + deduplicate
 
-# 3
-grep "\[ERROR\]" practice/logs/app.log > /tmp/errors.txt 2>/dev/null
-# > redirects stdout. 2>/dev/null discards stderr. Independent streams.
+# 3 — step 1: see the error
+chmod 000 logs/locked.log
+grep -r "\[ERROR\]" logs/ > /tmp/errors.txt
+# grep: logs/locked.log: Permission denied  <-- prints to terminal (stderr)
+
+# step 2: silence it
+grep -r "\[ERROR\]" logs/ > /tmp/errors.txt 2>/dev/null
+# terminal is clean. matches from readable files still saved to the file.
+cat /tmp/errors.txt
+
+# restore
+chmod 644 logs/locked.log
+
+# > redirects stdout. 2>/dev/null discards stderr. They are independent streams.
+# The matches from app.log and deploy.log are still saved — only the error message disappears.
 
 # 4
 grep -oE '\[(INFO|WARN|ERROR)\]' practice/logs/app.log | sort | uniq -c

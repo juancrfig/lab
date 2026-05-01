@@ -29,13 +29,13 @@ No peeking at SOLUTIONS.md until you've run your own answer.
 
 1. Count requests per IP in `nginx-access.log`, sorted most to least.
 2. List all unique HTTP status codes in `nginx-access.log`.
-3. First, lock `locked.log` so it's unreadable:
+3. Lock `locked.log` so it can't be read:
    ```bash
    chmod 000 logs/locked.log
    ```
-   Now grep recursively across all of `logs/` for `[ERROR]`, save matches to `/tmp/errors.txt`, and discard stderr.
-   Run it once **without** `2>/dev/null` so you see the Permission denied error. Then add it and see it disappear.
-   Restore permissions when done: `chmod 644 logs/locked.log`
+   Run grep recursively across all of `logs/` searching for `[ERROR]`, redirect matches to `/tmp/errors.txt`.
+   Do it **twice**: first without silencing stderr so you see the Permission denied, then add `2>/dev/null` so it disappears.
+   Restore when done: `chmod 644 logs/locked.log`
 4. Count log entries per level (INFO, WARN, ERROR) in `app.log`.
 5. Show unique endpoints that returned 4xx or 5xx in `nginx-access.log`.
 
