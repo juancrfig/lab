@@ -1,4 +1,0 @@
-Backup log - 2026-03-01
-Backup completed successfully.
-Files: 1,240
-Size: 2.3GB
