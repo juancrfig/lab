@@ -44,3 +44,14 @@ grep -Eri "password|secret|JWT"  ~/Projects/lab/bash/commands/practice/
 echo "========================================="
 echo "Show only lines related to the failed deployment v1.4.0"
 find ~/Projects/lab/bash/commands/practice/ -name "deploy.log" | xargs grep v1.4.0
+
+echo "==============================="
+echo "Block 3"
+echo "-----------------------"
+
+echo "Count requests per IP in nginx-access.log sorted most to least"
+find ~/Projects/lab/bash/commands/practice/ -name "nginx-access.log" | xargs cut -d" " -f1 | sort | uniq -c | sort -rn 
+
+echo "----------------------------"
+echo "List all unique HTTP status codes in nginx-access.log"
+find ~/Projects/lab/bash/commands/practice/ -name "nginx-access.log" | xargs grep -Eo " [0-9]{3} " | tr -d " " | sort -u
