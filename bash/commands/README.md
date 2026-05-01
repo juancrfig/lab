@@ -1,31 +1,59 @@
 # Bash Commands — Morning Practice
 
-> One block per day. Each block = ~5 min. Full run = 30 min.
-> Most exercises use `/etc/passwd` as the data source — it's always there, no setup needed.
+> One block per day ≈ 5–7 min. Full run ≈ 30 min.
+> All exercises use files from `practice/` or live system files — no setup needed.
+
+```
+practice/
+├── logs/
+│   ├── app.log           ← [INFO/WARN/ERROR] structured app logs
+│   ├── nginx-access.log  ← IP, method, status code, bytes
+│   └── deploy.log        ← multi-deployment history
+├── data/
+│   ├── sales.csv         ← date, region, product, units, revenue
+│   └── users.tsv         ← id, username, email, role, status
+├── configs/
+│   ├── app.env           ← production env vars
+│   ├── staging.env       ← staging env vars
+│   └── nginx.conf        ← nginx server block
+├── scripts/
+│   ├── deploy.sh
+│   └── backup.sh
+└── docs/
+    ├── report-q1.md
+    ├── report-q2.md
+    └── notes.txt
+```
 
 ---
 
 ## Block 1 — `find`
 
-> Practice files are in `practice/` inside this folder.
-
-**1.1** How many `.doc` files exist under `practice/`?
+**1.1** How many files are in `practice/` in total?
 <details><summary>Solution</summary>
 
 ```bash
-find practice/ -name "*.doc" | wc -l
+find practice/ -type f | wc -l
 ```
 </details>
 
-**1.2** Which shell scripts contain the word `ERROR`?
+**1.2** List every `.log` file and show its size.
 <details><summary>Solution</summary>
 
 ```bash
-find practice/ -name "*.sh" | xargs grep -l "ERROR"
+find practice/ -name "*.log" | xargs du -sh
 ```
 </details>
 
-**1.3** Find the 3 largest files in `practice/`.
+**1.3** Which scripts contain the word `ERROR`?
+<details><summary>Solution</summary>
+
+```bash
+find practice/scripts/ -name "*.sh" | xargs grep -l "ERROR"
+```
+</details>
+
+**1.4** Find the 3 largest files anywhere under `practice/`.
 <details><summary>Solution</summary>
 
 ```bash
@@ -33,12 +61,11 @@ find practice/ -type f | xargs du -sh | sort -rh | head -3
 ```
 </details>
 
-**1.4** Delete all `.doc` files recursively (preview first, then delete).
+**1.5** Find all config files (`.env` or `.conf`) and print their paths.
 <details><summary>Solution</summary>
 
 ```bash
-find practice/ -name "*.doc"          # preview
-find practice/ -name "*.doc" -delete  # delete
+find practice/configs/ -type f \( -name "*.env" -o -name "*.conf" \)
 ```
 </details>
 
@@ -46,37 +73,47 @@ find practice/ -name "*.doc" -delete  # delete
 
 ## Block 2 — `grep`
 
-**2.1** How many user accounts exist on this system?
+**2.1** How many ERROR lines are in `app.log`?
 <details><summary>Solution</summary>
 
 ```bash
-grep -c "" /etc/passwd
-# or:
-wc -l < /etc/passwd
+grep -c "\[ERROR\]" practice/logs/app.log
 ```
 </details>
 
-**2.2** Find your own entry in `/etc/passwd`.
+**2.2** Show all 500 status responses from the nginx access log.
 <details><summary>Solution</summary>
 
 ```bash
-grep "^$(whoami)" /etc/passwd
+grep '" 500 ' practice/logs/nginx-access.log
 ```
 </details>
 
-**2.3** List all users whose shell is `/bin/bash`.
+**2.3** Search all log files at once for the word `timeout`.
 <details><summary>Solution</summary>
 
 ```bash
-grep "/bin/bash$" /etc/passwd
+grep -r "timeout" practice/logs/
+# With filename + line number:
+grep -rn "timeout" practice/logs/
 ```
 </details>
 
-**2.4** Find all users that do NOT have a login shell (`nologin` or `/bin/false`).
+**2.4** Find any line across all `practice/` files that mentions a password or secret.
 <details><summary>Solution</summary>
 
 ```bash
-grep -E "nologin|/bin/false" /etc/passwd
+grep -ri "password\|secret\|jwt" practice/
+```
+
+> This is a real DevOps habit — auditing for accidental secret exposure.
+</details>
+
+**2.5** From `deploy.log`, show only the lines from the **failed** deployment (v1.4.0).
+<details><summary>Solution</summary>
+
+```bash
+grep "v1.4.0\|ERROR\|aborted" practice/logs/deploy.log
 ```
 </details>
 
@@ -84,49 +121,50 @@ grep -E "nologin|/bin/false" /etc/passwd
 
 ## Block 3 — Pipes & Streams
 
-> `stdin` = input (fd 0) | `stdout` = output (fd 1) | `stderr` = errors (fd 2)
+> `stdin` fd 0 | `stdout` fd 1 | `stderr` fd 2
 
-**3.1** Send stdout to a file, stderr to a different file.
+**3.1** Count how many requests each IP made in the nginx log.
 <details><summary>Solution</summary>
 
 ```bash
-grep "bash" /etc/passwd > found.txt 2> errors.txt
+cut -d' ' -f1 practice/logs/nginx-access.log | sort | uniq -c | sort -rn
+```
+
+> `cut -d' ' -f1` extracts the first field (IP). Then sort → uniq → sort by count.
+</details>
+
+**3.2** List all unique HTTP status codes seen in the nginx log.
+<details><summary>Solution</summary>
+
+```bash
+grep -oE '" [0-9]{3} ' practice/logs/nginx-access.log | tr -d '" ' | sort | uniq
 ```
 </details>
 
-**3.2** Discard errors entirely (send stderr to `/dev/null`).
+**3.3** Save all ERROR lines from `app.log` to a file, discard any grep errors.
 <details><summary>Solution</summary>
 
 ```bash
-find / -name "*.log" 2>/dev/null
-```
-
-> Without `2>/dev/null` you'd drown in `Permission denied` errors.
-</details>
-
-**3.3** Redirect both stdout and stderr to the same file.
-<details><summary>Solution</summary>
-
-```bash
-grep "bash" /etc/passwd > all_output.txt 2>&1
-```
-
-> `2>&1` = "send fd2 to wherever fd1 is going."
-</details>
-
-**3.4** Count how many users have `/bin/bash` as their shell.
-<details><summary>Solution</summary>
-
-```bash
-grep "/bin/bash" /etc/passwd | wc -l
+grep "\[ERROR\]" practice/logs/app.log > /tmp/errors.txt 2>/dev/null
+cat /tmp/errors.txt
 ```
 </details>
 
-**3.5** Chain 3 commands: extract all shells, sort, count unique ones.
+**3.4** Count how many log entries exist per severity level (INFO, WARN, ERROR).
 <details><summary>Solution</summary>
 
 ```bash
-cut -d: -f7 /etc/passwd | sort | uniq -c | sort -rn
+grep -oE '\[(INFO|WARN|ERROR)\]' practice/logs/app.log | sort | uniq -c
+```
+</details>
+
+**3.5** Show the unique endpoints that returned a 4xx or 5xx in the nginx log.
+<details><summary>Solution</summary>
+
+```bash
+grep -E '" [45][0-9]{2} ' practice/logs/nginx-access.log \
+  | grep -oE '"[A-Z]+ [^ ]+' \
+  | sort | uniq
 ```
 </details>
 
@@ -134,58 +172,54 @@ cut -d: -f7 /etc/passwd | sort | uniq -c | sort -rn
 
 ## Block 4 — `cut` / `uniq` / `tr` / `xargs`
 
-> `/etc/passwd` fields: `username:password:UID:GID:comment:home:shell` (1–7)
-
-**4.1 `cut`** — Extract just the usernames (field 1).
+**4.1 `cut`** — Extract just the usernames from `users.tsv` (skip header).
 <details><summary>Solution</summary>
 
 ```bash
-cut -d: -f1 /etc/passwd
+tail -n +2 practice/data/users.tsv | cut -f2
+```
+
+> `tail -n +2` skips the header row. `-f2` = field 2 (tab-delimited by default).
+</details>
+
+**4.2 `cut`** — List all unique regions from `sales.csv`.
+<details><summary>Solution</summary>
+
+```bash
+tail -n +2 practice/data/sales.csv | cut -d, -f2 | sort | uniq
 ```
 </details>
 
-**4.2 `cut`** — Extract username and home directory (fields 1 and 6).
+**4.3 `uniq`** — Which product appears most in `sales.csv`?
 <details><summary>Solution</summary>
 
 ```bash
-cut -d: -f1,6 /etc/passwd
+tail -n +2 practice/data/sales.csv | cut -d, -f3 | sort | uniq -c | sort -rn
 ```
 </details>
 
-**4.3 `uniq`** — List all unique shells in use.
+**4.4 `tr`** — Print all env variable names from `app.env` in lowercase.
 <details><summary>Solution</summary>
 
 ```bash
-cut -d: -f7 /etc/passwd | sort | uniq
-```
-
-> `uniq` only removes **adjacent** duplicates — always `sort` first.
-</details>
-
-**4.4 `tr`** — Print all usernames in UPPERCASE.
-<details><summary>Solution</summary>
-
-```bash
-cut -d: -f1 /etc/passwd | tr '[:lower:]' '[:upper:]'
+grep -v '^#' practice/configs/app.env | grep '=' | cut -d= -f1 | tr '[:upper:]' '[:lower:]'
 ```
 </details>
 
-**4.5 `tr`** — Replace `:` in `/etc/passwd` with a tab.
+**4.5 `tr`** — Convert `sales.csv` commas to pipes `|` and preview the first 5 rows.
 <details><summary>Solution</summary>
 
 ```bash
-cat /etc/passwd | tr ':' '\t'
+cat practice/data/sales.csv | tr ',' '|' | head -5
 ```
 </details>
 
-**4.6 `xargs`** — Look up `root` and `daemon` entries in `/etc/passwd`.
+**4.6 `xargs`** — For each `.env` file, print its filename and count how many variables it defines.
 <details><summary>Solution</summary>
 
 ```bash
-echo -e "root\ndaemon" | xargs -I{} grep "^{}:" /etc/passwd
+find practice/configs/ -name "*.env" | xargs -I{} sh -c 'echo "{}:"; grep -v "^#" {} | grep -c "="'
 ```
-
-> `-I{}` is a placeholder replaced by each input line.
 </details>
 
 ---
@@ -207,26 +241,37 @@ Octal  Perms    Common use
 755  rwxr-xr-x  Scripts, directories
 ```
 
-**5.1** Inspect the 3 system files and try to read `/etc/shadow`.
+**5.1** Check the current permissions on the two scripts in `practice/scripts/`.
 <details><summary>Solution</summary>
 
 ```bash
-ls -l /etc/passwd /etc/shadow /etc/group
-cat /etc/shadow   # Expected: Permission denied
+ls -l practice/scripts/
 ```
+
+> Are they executable? If not, you couldn’t run them directly with `./deploy.sh`.
 </details>
 
-**5.2** `chmod` practice — set a file to 600, then 644, inspect after each.
+**5.2** Make both scripts executable, then verify.
 <details><summary>Solution</summary>
 
 ```bash
-echo "test" > /tmp/test.txt
-chmod 600 /tmp/test.txt && ls -l /tmp/test.txt
-chmod 644 /tmp/test.txt && ls -l /tmp/test.txt
+chmod 755 practice/scripts/*.sh
+ls -l practice/scripts/
 ```
 </details>
 
-**5.3** The Mentor's Challenge — prove permissions enforce access.
+**5.3** Lock down the env files so only the owner can read them (simulate secret handling).
+<details><summary>Solution</summary>
+
+```bash
+chmod 600 practice/configs/*.env
+ls -l practice/configs/
+```
+
+> Production `.env` files should always be `600`. Never `644` — that exposes secrets to all users.
+</details>
+
+**5.4** The Mentor’s Challenge — prove permissions enforce access.
 <details><summary>Solution</summary>
 
 ```bash
@@ -245,11 +290,11 @@ grep alice /etc/passwd               # no output = clean
 ```
 </details>
 
-**5.4** Audit world-writable files in `/tmp`.
+**5.5** Find any world-writable files under `practice/`.
 <details><summary>Solution</summary>
 
 ```bash
-find /tmp -type f -perm /o+w 2>/dev/null
+find practice/ -type f -perm /o+w
 ```
 </details>
 
@@ -257,14 +302,14 @@ find /tmp -type f -perm /o+w 2>/dev/null
 
 ## Block 6 — `journalctl` + grep + pipes
 
-> `journalctl` is the systemd log reader. Replaces manually hunting through `/var/log/`.
+> `journalctl` is the systemd log reader — replaces manually hunting through `/var/log/`.
 
 ```
 journalctl -r                      # newest first
 journalctl -f                      # follow (live)
 journalctl -n 50                   # last 50 lines
 journalctl -u nginx                # logs for one service
-journalctl -p err                  # by priority (emerg alert crit err warning notice info debug)
+journalctl -p err                  # by priority
 journalctl -b                      # since last boot
 journalctl --since "1 hour ago"    # time filter
 ```
@@ -277,37 +322,31 @@ journalctl -rn 20
 ```
 </details>
 
-**6.2** How many error-level (or worse) events happened since last boot?
+**6.2** How many error-level events happened since last boot?
 <details><summary>Solution</summary>
 
 ```bash
 journalctl -b -p err | wc -l
 ```
-
-> `-p err` includes emerg, alert, crit, err — everything serious.
 </details>
 
-**6.3** Show SSH logs and filter for failed login attempts.
+**6.3** Show SSH logs filtered for failed login attempts.
 <details><summary>Solution</summary>
 
 ```bash
 journalctl -u ssh | grep -i "failed"
-# on some systems:
-journalctl -u sshd | grep -i "failed"
 ```
 </details>
 
-**6.4** Find the most repeated error messages since last boot (top 5).
+**6.4** Top 5 most repeated error messages since last boot.
 <details><summary>Solution</summary>
 
 ```bash
 journalctl -b -p err -o cat | sort | uniq -c | sort -rn | head -5
 ```
-
-> `-o cat` strips timestamps so `uniq` can group identical messages.
 </details>
 
-**6.5** Watch logs in real time, show only lines with `error` or `fail`.
+**6.5** Watch live logs, show only `error` or `fail` lines.
 <details><summary>Solution</summary>
 
 ```bash
@@ -315,7 +354,7 @@ journalctl -f | grep -i -E "error|fail"
 ```
 </details>
 
-**6.6** Save all errors from the last hour to a timestamped file.
+**6.6** Save last hour’s errors to a timestamped file.
 <details><summary>Solution</summary>
 
 ```bash
@@ -327,73 +366,51 @@ journalctl --since "1 hour ago" -p err > ~/errors_$(date +%Y%m%d_%H%M).txt
 
 ## Block 7 — Processes, Memory & Uptime
 
-> Answer your mentor's 4 questions every morning as a health check ritual.
-
 **7.1** How many processes are currently running?
 <details><summary>Solution</summary>
 
 ```bash
-ps aux | wc -l
-
-# Subtract 1 for the header line:
 ps aux | tail -n +2 | wc -l
 ```
-
-> `ps aux` = all processes, all users, with CPU/mem info.
 </details>
 
 **7.2** Which process is using the most memory?
 <details><summary>Solution</summary>
 
 ```bash
-# With ps (sorted by memory, top 5):
 ps aux --sort=-%mem | head -6
-
-# Interactive (visual):
-htop
-# Inside htop: press M to sort by memory, q to quit
+# Interactive:
+htop  # press M to sort by memory
 ```
-
-> Column `%MEM` = % of RAM used. Column `RSS` = actual RAM in KB.
 </details>
 
 **7.3** When was the system last booted?
 <details><summary>Solution</summary>
 
 ```bash
-# Quick answer:
 uptime -s
-
-# With more detail:
-who -b
-
-# Full boot history:
+# or full history:
 last reboot | head -5
 ```
 </details>
 
-**7.4** How much memory is available right now?
+**7.4** How much memory is available?
 <details><summary>Solution</summary>
 
 ```bash
 free -h
 ```
 
-```
-              total   used   free   shared  buff/cache  available
-Mem:           15Gi   4Gi    2Gi    300Mi      8Gi         10Gi
-```
-
-> Read the `available` column — not `free`. Available = what the OS can actually give to a new process (includes reclaimable cache).
+> Read `available`, not `free`. Available includes reclaimable cache.
 </details>
 
-**7.5** One-liner morning health check — print all 4 answers at once.
+**7.5** One-liner morning health check.
 <details><summary>Solution</summary>
 
 ```bash
-echo "=== Processes ==="  && ps aux | tail -n +2 | wc -l
-echo "=== Top Memory ==" && ps aux --sort=-%mem | head -4
-echo "=== Last Boot ===" && uptime -s
+echo "=== Processes ==="  && ps aux | tail -n +2 | wc -l && \
+echo "=== Top Memory ==" && ps aux --sort=-%mem | head -4 && \
+echo "=== Last Boot ===" && uptime -s && \
 echo "=== Memory ======" && free -h
 ```
 </details>
@@ -404,47 +421,39 @@ echo "=== Memory ======" && free -h
 
 ```bash
 # find
-find . -name "*.ext" | wc -l
-find . -name "*.ext" | xargs du -sh
-find . -type f | xargs du -sh | sort -rh | head -5
+find . -type f | wc -l
+find . -name "*.ext" | xargs du -sh | sort -rh | head -5
+find . -name "*.env" -o -name "*.conf"
 
 # grep
-grep -c "pattern" file
-grep -v "pattern" file | wc -l
-grep -E "pat1|pat2" file
-grep -rni "pattern" dir/
+grep -c "pattern" file                      # count matches
+grep -rn "pattern" dir/                     # recursive + line numbers
+grep -E "pat1|pat2" file                    # OR
+grep -v "#" file | grep "="                 # non-comment lines with =
+grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}' f  # extract IPs
 
 # streams
-cmd > out.txt            # stdout to file
-cmd 2> err.txt           # stderr to file
-cmd > all.txt 2>&1       # both to same file
-cmd 2>/dev/null          # silence errors
+cmd > out.txt 2>/dev/null    # stdout to file, silence errors
+cmd > all.txt 2>&1           # stdout + stderr to same file
 
 # cut / uniq / tr / xargs
-cut -d: -f1 /etc/passwd
-cut -d: -f1,6 /etc/passwd
-cat file | sort | uniq -c | sort -rn
-cat file | tr 'a-z' 'A-Z'
-cat file | tr ':' '\t'
-echo -e "a\nb" | xargs -I{} cmd {}
+tail -n +2 file.csv | cut -d, -f2          # skip header, get field 2
+cut -d' ' -f1 file | sort | uniq -c | sort -rn  # count occurrences
+cat file | tr ',' '|'                      # replace delimiter
+find . -name "*.sh" | xargs -I{} sh -c 'echo {}; wc -l {}'
 
 # permissions
-ls -l file
-chmod 644 file
-chown user:group file
-find . -perm /o+w
+chmod 600 *.env          # lock down secrets
+chmod 755 *.sh           # make scripts executable
+find . -perm /o+w        # find world-writable
+ls -l                    # inspect permissions
 
 # journalctl
 journalctl -rn 50
-journalctl -f | grep -i "error"
-journalctl -b -p err | wc -l
-journalctl -u nginx | grep "failed"
-journalctl --since "1 hour ago" -p err > errors.txt
+journalctl -f | grep -i -E "error|fail"
 journalctl -b -p err -o cat | sort | uniq -c | sort -rn | head -5
 
-# processes / memory / uptime
-ps aux | tail -n +2 | wc -l          # process count
-ps aux --sort=-%mem | head -6        # top memory consumers
-uptime -s                            # last boot time
-free -h                              # memory (read 'available')
+# processes / memory
+ps aux --sort=-%mem | head -6
+uptime -s && free -h
 ```
