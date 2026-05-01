@@ -1,0 +1,23 @@
+[2026-04-25 10:00:00] INFO  Starting deployment v1.4.0 to production
+[2026-04-25 10:00:05] INFO  Pulling latest code from main branch
+[2026-04-25 10:00:20] INFO  Installing dependencies
+[2026-04-25 10:01:00] INFO  Running database migrations
+[2026-04-25 10:01:30] ERROR Migration failed: column 'user_id' already exists
+[2026-04-25 10:01:31] ERROR Deployment aborted
+[2026-04-26 09:00:00] INFO  Starting deployment v1.4.1 to production
+[2026-04-26 09:00:05] INFO  Pulling latest code from main branch
+[2026-04-26 09:00:20] INFO  Installing dependencies
+[2026-04-26 09:01:00] INFO  Running database migrations
+[2026-04-26 09:01:30] INFO  Migrations complete
+[2026-04-26 09:02:00] INFO  Restarting application server
+[2026-04-26 09:02:10] INFO  Health check passed
+[2026-04-26 09:02:11] INFO  Deployment v1.4.1 complete
+[2026-04-28 14:00:00] INFO  Starting deployment v1.5.0 to staging
+[2026-04-28 14:00:10] INFO  Pulling latest code from dev branch
+[2026-04-28 14:00:30] INFO  Installing dependencies
+[2026-04-28 14:01:00] WARN  Deprecated package detected: lodash@3.x
+[2026-04-28 14:01:30] INFO  Running database migrations
+[2026-04-28 14:02:00] INFO  Migrations complete
+[2026-04-28 14:02:30] INFO  Restarting application server
+[2026-04-28 14:02:40] INFO  Health check passed
+[2026-04-28 14:02:41] INFO  Deployment v1.5.0 to staging complete

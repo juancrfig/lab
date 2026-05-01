@@ -1,0 +1,11 @@
+id	username	email	role	status	created_at
+1	maria	maria@example.com	admin	active	2024-01-10
+2	carlos	carlos@example.com	dev	active	2024-02-15
+3	ana	ana@example.com	dev	inactive	2024-03-01
+4	pedro	pedro@example.com	ops	active	2024-03-20
+5	sofia	sofia@example.com	dev	active	2024-04-05
+6	luisa	luisa@example.com	ops	inactive	2024-05-12
+7	miguel	miguel@example.com	dev	active	2024-06-18
+8	valeria	valeria@example.com	admin	active	2024-07-22
+9	diego	diego@example.com	dev	inactive	2024-08-30
+10	camila	camila@example.com	ops	active	2024-09-14

@@ -1,7 +1,20 @@
-[INFO]  2026-04-30 08:00:01 - Server started on port 3000
-[WARN]  2026-04-30 08:45:00 - Response time high: 1800ms
-[ERROR] 2026-04-30 09:01:12 - Connection timeout: db.internal:5432 (attempt 1)
-[ERROR] 2026-04-30 09:01:19 - Connection timeout: db.internal:5432 (attempt 2)
-[INFO]  2026-04-30 09:02:00 - Reconnected to database
-[ERROR] 2026-04-30 11:05:33 - Unhandled exception in /api/orders: TypeError
-[INFO]  2026-04-30 11:06:00 - Server recovered
+[INFO]  2026-04-28 08:00:01 startup    Server started on port 3000
+[INFO]  2026-04-28 08:01:10 auth       User login: maria@example.com
+[WARN]  2026-04-28 08:45:00 perf       Response time high: 1800ms on /api/orders
+[ERROR] 2026-04-28 09:01:12 db         Connection timeout: db.internal:5432 (attempt 1)
+[ERROR] 2026-04-28 09:01:19 db         Connection timeout: db.internal:5432 (attempt 2)
+[INFO]  2026-04-28 09:02:00 db         Reconnected to database
+[INFO]  2026-04-28 09:15:33 auth       User login: carlos@example.com
+[WARN]  2026-04-28 10:20:00 perf       Response time high: 2100ms on /api/products
+[ERROR] 2026-04-28 11:05:33 app        Unhandled exception in /api/orders: TypeError
+[INFO]  2026-04-28 11:06:00 app        Server recovered
+[INFO]  2026-04-28 12:00:00 auth       User login: ana@example.com
+[ERROR] 2026-04-28 13:45:01 db         Deadlock detected on table orders
+[WARN]  2026-04-28 14:00:00 perf       Response time high: 1950ms on /api/users
+[INFO]  2026-04-28 14:30:00 auth       User login: pedro@example.com
+[ERROR] 2026-04-28 15:10:05 app        Unhandled exception in /api/payments: ReferenceError
+[INFO]  2026-04-28 15:11:00 app        Server recovered
+[WARN]  2026-04-28 16:00:00 perf       Memory usage at 87%
+[ERROR] 2026-04-28 16:45:22 db         Connection timeout: db.internal:5432 (attempt 1)
+[INFO]  2026-04-28 17:00:00 auth       User login: sofia@example.com
+[INFO]  2026-04-28 17:30:00 startup    Graceful shutdown initiated

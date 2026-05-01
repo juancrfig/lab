@@ -1,4 +1,6 @@
-Meeting notes - 2026-04-30
-- Discussed deployment pipeline
-- Action: set up CI/CD
-- Owner: Juanes
+2026-04-28 standup notes
+- deployment to prod was blocked by migration error last week
+- carlos and miguel are working on the payment timeout bug
+- sofia requested access to staging environment
+- action: pedro to update nginx whitelist by EOD
+- reminder: rotate JWT secrets before May release
