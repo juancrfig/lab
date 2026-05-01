@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo "How many files are in the practice directory?"
+echo "There are $(find ../../ -type f | wc -l) files in the practice directory"
+
+echo "--------------------------------------------------------------------------"
+
+echo "List every .log file and its size"
+find ~/Projects/lab/bash/commands/practice -name "*.log" | xargs du -h
+
+echo "--------------------------------------------------------------------------"
+echo "Which scripts inside scripts/ contain the word ERROR?"
+result=$(grep "ERROR" ~/Projects/lab/bash/commands/practice/scripts/ -lr)
+echo "Answer: $result"
+
+echo "--------------------------------------------------------------------------"
+echo "Find the three largest files under practice/"
+largest=$(find ~/Projects/lab/bash/commands/practice/ -type f | xargs du -sh | sort -rh | head -3)
+echo -e "The largest three files are: \n$largest"
+
+echo "-------------------------------------------------------------------------"
+echo "Find all .env and .conf files under configs/"
+
+files=$(find ~/Projects/lab/bash/commands/practice/configs/ -name "*.env" -o -name "*.conf")
+echo "$files"

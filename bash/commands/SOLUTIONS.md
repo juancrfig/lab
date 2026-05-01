@@ -14,7 +14,7 @@ find practice/ -type f | wc -l
 find practice/ -name "*.log" | xargs du -sh
 
 # 3
-find practice/scripts/ -name "*.sh" | xargs grep -l "ERROR"
+grep "ERROR" directory -l
 # -l = list filenames only, not matching lines
 
 # 4
