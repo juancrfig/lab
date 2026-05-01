@@ -20,12 +20,12 @@ shellcheck challenge.sh
 # Run it
 bash challenge.sh
 
-# Debug mode (shows each line as it executes)
+# Debug mode — shows every command as it executes
 bash -x challenge.sh
 ```
 
-> **shellcheck** is your linter. Install it: `sudo apt install shellcheck` or `brew install shellcheck`.
-> **bash -x** traces every command. Add `set -x` inside a script to debug a specific section.
+> **shellcheck** is your linter. Install: `sudo apt install shellcheck` or `brew install shellcheck`.
+> **bash -x** traces every command. Add `set -x` / `set +x` inside a script to debug just one section.
 
 ---
 
@@ -33,7 +33,7 @@ bash -x challenge.sh
 
 > Topics: assignment, access, single vs double quotes, command substitution
 
-**1.1** Write a script that stores your name, today’s date, and the current hostname into variables, then prints them on one line each.
+**1.1** Write a script that stores your name, today's date, and the current hostname into variables, then prints them one per line.
 <details><summary>Solution</summary>
 
 ```bash
@@ -47,10 +47,10 @@ echo "Date: $today"
 echo "Host: $host"
 ```
 
-> `$(command)` captures the output of a command into a variable. No spaces around `=`.
+> `$(command)` captures stdout of a command into a variable. No spaces around `=` — ever.
 </details>
 
-**1.2** What’s the difference between these two lines? Predict the output before running.
+**1.2** Predict the output of these two lines *before* running them. Then run them and verify.
 
 ```bash
 user="Juanes"
@@ -60,14 +60,14 @@ echo 'Hello $user'
 <details><summary>Solution</summary>
 
 ```
-Hello Juanes   ← double quotes: variables are expanded
-Hello $user    ← single quotes: everything is literal
+Hello Juanes   ← double quotes: variables expand
+Hello $user    ← single quotes: everything is literal, no expansion
 ```
 
-> Rule: use double quotes almost always. Use single quotes when you want a literal string with no expansion.
+> **Rule:** use double quotes almost always. Use single quotes only when you need a literal string with zero expansion.
 </details>
 
-**1.3** What’s wrong with this script? Fix it.
+**1.3** This script has two bugs. Find and fix both before running it.
 
 ```bash
 #!/bin/bash
@@ -78,20 +78,22 @@ echo $greeting
 
 ```bash
 #!/bin/bash
-greeting="Hello"   # no spaces around =
-echo "$greeting"   # always quote variables
+greeting="Hello"   # Bug 1: spaces around = make bash treat 'greeting' as a command
+echo "$greeting"   # Bug 2: unquoted $var is vulnerable to word splitting
 ```
 
-> Spaces around `=` make bash think `greeting` is a command. Always quote `$var` to avoid word splitting.
+> These are the two most common beginner mistakes. Burn them into memory:
+> 1. No spaces around `=`
+> 2. Always quote `"$variable"`
 </details>
 
 ---
 
 ## Level 2 — Arguments & Debug Mode
 
-> Topics: `$1`, `$#`, `$@`, `bash -x`, `shellcheck`
+> Topics: `$1`, `$#`, `$@`, `$0`, `bash -x`, `shellcheck`
 
-**2.1** Write a script `greet.sh` that takes a name as `$1` and prints `Hello, <name>!`. If no argument is given, print `Usage: greet.sh <name>` and exit with code 1.
+**2.1** Write `greet.sh`. It takes a name as `$1` and prints `Hello, <name>!`. If called with no argument, print a usage message and exit with code 1.
 <details><summary>Solution</summary>
 
 ```bash
@@ -105,13 +107,13 @@ fi
 echo "Hello, $1!"
 ```
 
-> `$#` = number of arguments. `$0` = script name. `exit 1` signals failure.
+> `$#` = argument count. `$0` = the script's own name. `exit 1` = signal failure to the caller.
 </details>
 
-**2.2** Write a script that prints each argument it receives on a separate line, prefixed with its position number.
+**2.2** Write a script that prints each argument on a separate line, prefixed with its position number.
 
-```bash
-# Example: bash script.sh alpha beta gamma
+```
+# bash script.sh alpha beta gamma
 # 1: alpha
 # 2: beta
 # 3: gamma
@@ -127,32 +129,50 @@ for arg in "$@"; do
 done
 ```
 
-> `"$@"` expands to all arguments as separate quoted strings. Never use `$*` — it breaks on spaces in arguments.
+> **`"$@"` vs `$*`:**
+> - `"$@"` → each argument stays as its own quoted word: `"alpha"` `"beta"` `"gamma"`
+> - `"$*"` → all arguments collapse into one string: `"alpha beta gamma"`
+> Use `"$@"` whenever you loop over arguments. `$*` breaks if any argument contains spaces.
 </details>
 
-**2.3** Run any of your scripts with `bash -x` and observe the trace. Then add `set -x` halfway through a script to debug only that section.
+**2.3** Run `greet.sh` with `bash -x` and read the trace. Then add `set -x` halfway through any script to debug only that section, and `set +x` to turn it off.
 <details><summary>What to look for</summary>
 
 ```bash
 bash -x greet.sh Juanes
-# + [[ 0 -eq 0 ]]   ← each line shows with + prefix
+# + [[ 1 -eq 0 ]]        ← condition evaluated
 # + echo 'Hello, Juanes!'
 # Hello, Juanes!
 ```
 
-> Lines prefixed with `+` are the expanded commands bash actually ran. This is how you catch quoting bugs.
+> Every line prefixed with `+` is the fully expanded command bash ran. This is how you catch bugs where a variable contains something unexpected.
+>
+> Inside a script:
+> ```bash
+> set -x   # start tracing here
+> some_command
+> set +x   # stop tracing
+> ```
 </details>
 
 ---
 
 ## Level 3 — Parameter Expansion
 
-> Your mentor’s core lesson: stop spawning subprocesses. Do it inside bash.
+> Your mentor's core lesson: **stop spawning subprocesses. Do it inside bash.**
+>
+> Every `sed`, `awk`, `cut`, or `tr` call inside a script spawns a new process.
+> In a loop over 1000 files that's 1000 subprocesses. Parameter expansion is instant — it's built into bash.
 
-**3.1** Without using `sed`, `cut`, or `awk` — extract the filename, directory, extension, and base name from this path.
+**3.1** Without using `sed`, `cut`, or `awk` — extract all four parts of this path using only parameter expansion.
 
 ```bash
 filepath="/home/juanes/reports/summary.tar.gz"
+# Expected:
+# filename:  summary.tar.gz
+# directory: /home/juanes/reports
+# extension: gz
+# basename:  summary
 ```
 <details><summary>Solution</summary>
 
@@ -160,10 +180,10 @@ filepath="/home/juanes/reports/summary.tar.gz"
 #!/bin/bash
 filepath="/home/juanes/reports/summary.tar.gz"
 
-filename="${filepath##*/}"    # summary.tar.gz
-directory="${filepath%/*}"    # /home/juanes/reports
-extension="${filename##*.}"   # gz
-basename="${filename%%.*}"    # summary
+filename="${filepath##*/}"    # summary.tar.gz  — remove longest prefix up to last /
+directory="${filepath%/*}"    # /home/juanes/reports — remove shortest suffix from last /
+extension="${filename##*.}"   # gz              — remove longest prefix up to last .
+basename="${filename%%.*}"    # summary         — remove longest suffix from first .
 
 echo "filename:  $filename"
 echo "directory: $directory"
@@ -171,42 +191,58 @@ echo "extension: $extension"
 echo "basename:  $basename"
 ```
 
-> Memory aid: `#` is left of `$` on keyboard → removes from left (prefix). `%` is right of `$` → removes from right (suffix). Single = shortest match, double = longest match.
+> **Memory aid — look at your keyboard:**
+> `#` is **left** of `$` → removes from the **left** (strips a prefix)
+> `%` is **right** of `$` → removes from the **right** (strips a suffix)
+> Single `#` or `%` → shortest match
+> Double `##` or `%%` → longest match
 </details>
 
-**3.2** Write a script `deploy.sh` that takes an environment as `$1`. Use a default value so it falls back to `staging` if nothing is passed.
+**3.2** Write `deploy.sh`. It takes an environment as `$1` and reads `LOG_LEVEL` from the environment. Both should have safe defaults — no `if` statement allowed.
 <details><summary>Solution</summary>
 
 ```bash
 #!/bin/bash
-env="${1:-staging}"
+env_name="${1:-staging}"
 log_level="${LOG_LEVEL:-info}"
 
-echo "Deploying to: $env (log level: $log_level)"
+echo "Deploying to: $env_name (log level: $log_level)"
 ```
 
-> `${var:-default}` is the professional way to handle missing args. No `if` statement needed.
+> `${var:-default}` is the professional pattern for missing args. Clean, readable, no boilerplate.
+> Test it:
+> ```bash
+> bash deploy.sh              # staging / info
+> bash deploy.sh production   # production / info
+> LOG_LEVEL=debug bash deploy.sh production  # production / debug
+> ```
 </details>
 
-**3.3** Validate a password variable: if it’s shorter than 8 characters, print an error and exit 1.
+**3.3** Validate a password passed as `$1`. Reject it if shorter than 8 characters. Use `${#var}` — not `wc`.
 <details><summary>Solution</summary>
 
 ```bash
 #!/bin/bash
-password="${1:-’’}"
+password="${1:-}"
 
-if [[ ${#password} -lt 8 ]]; then
-  echo "Error: password too short (${#password} chars, need 8+)"
+if [[ -z "$password" ]]; then
+  echo "Usage: $0 <password>"
   exit 1
 fi
 
-echo "Password length OK: ${#password} chars"
+if [[ ${#password} -lt 8 ]]; then
+  echo "Error: password too short (${#password} chars, minimum 8)"
+  exit 1
+fi
+
+echo "OK: password length is ${#password}"
 ```
 
-> `${#var}` = length of the string. No `echo | wc -c` needed.
+> `${1:-}` sets an empty string as default (not `''` — that would make the default literally two single-quote characters).
+> `${#var}` gives the string length. No subprocess, no pipe.
 </details>
 
-**3.4** Replace all spaces in a string with underscores, then uppercase it — without `tr` or `sed`.
+**3.4** Replace all spaces in a string with underscores, then uppercase everything — without `tr` or `sed`.
 <details><summary>Solution</summary>
 
 ```bash
@@ -218,16 +254,18 @@ upper="${no_spaces^^}"
 echo "$upper"   # HELLO_WORLD_FROM_BASH
 ```
 
-> `${var// /replacement}` replaces all matches. `${var^^}` uppercases. Both are built-in.
+> `${var// /replacement}` replaces **all** matches (single `/` = first match only).
+> `${var^^}` uppercases all. `${var,,}` lowercases all.
+> No `tr`, no subprocess.
 </details>
 
 ---
 
 ## Level 4 — Conditionals & Exit Codes
 
-> Topics: `[[ ]]`, `-f/-d/-e`, `-z/-n`, `&&`, `||`, `$?`, `case`
+> Topics: `[[ ]]`, file tests, `-z/-n`, `&&`, `||`, `$?`, `case`
 
-**4.1** Write a script that checks if a file passed as `$1` exists and is readable. Print a clear message for each case.
+**4.1** Write a script that takes a file path as `$1` and validates it step by step: argument given → file exists → file is readable. Exit 1 with a clear message at the first failure.
 <details><summary>Solution</summary>
 
 ```bash
@@ -240,68 +278,74 @@ if [[ -z "$file" ]]; then
 fi
 
 if [[ ! -f "$file" ]]; then
-  echo "Error: '$file' does not exist or is not a file"
+  echo "Error: '$file' does not exist or is not a regular file"
   exit 1
 fi
 
 if [[ ! -r "$file" ]]; then
-  echo "Error: '$file' is not readable"
+  echo "Error: '$file' exists but is not readable"
   exit 1
 fi
 
 echo "OK: '$file' exists and is readable"
 ```
+
+> **Always use `[[ ]]`, never `[ ]`.** Double brackets are bash-native: safer quoting, no word splitting, supports `==`, `!=`, `=~`, `&&`, `||` inside the test.
 </details>
 
-**4.2** Write a `case` statement that prints a message based on the environment argument: `production`, `staging`, `dev`, or anything else.
+**4.2** Write a `case` statement that selects config based on the environment arg: `production`, `staging`, `dev`, or exit on unknown.
 <details><summary>Solution</summary>
 
 ```bash
 #!/bin/bash
-env="${1:-dev}"
+env_name="${1:-dev}"
 
-case "$env" in
+case "$env_name" in
   production)
-    echo "[PROD] Full logging, no debug"
+    echo "[PROD] Full logging, alerts on, no debug output"
     ;;
   staging)
-    echo "[STAGING] Verbose logging enabled"
+    echo "[STAGING] Verbose logging, errors to Slack"
     ;;
   dev)
-    echo "[DEV] Debug mode on"
+    echo "[DEV] Debug mode on, local database"
     ;;
   *)
-    echo "Unknown environment: $env"
+    echo "Error: unknown environment '$env_name'"
+    echo "Valid options: production, staging, dev"
     exit 1
     ;;
 esac
 ```
 
-> `case` is cleaner than chained `if/elif` for matching a variable against known values.
+> `case` beats a chain of `if/elif` when matching one variable against known values — cleaner and faster to read.
 </details>
 
-**4.3** Run a command and check its exit code with `$?`. Use `&&` and `||` to handle success and failure in one line.
+**4.3** Three ways to handle exit codes — write a script that demonstrates all three patterns.
 <details><summary>Solution</summary>
 
 ```bash
 #!/bin/bash
 
-# Long form with $?
-ls /etc/passwd
+# Pattern 1: check $? explicitly (verbose, clear)
+ls /etc/passwd > /dev/null
 if [[ $? -eq 0 ]]; then
-  echo "Command succeeded"
-else
-  echo "Command failed"
+  echo "1. Command succeeded"
 fi
 
-# Concise with && / ||
-ls /nonexistent 2>/dev/null && echo "Found" || echo "Not found"
+# Pattern 2: inline with && / || (concise)
+ls /nonexistent 2>/dev/null && echo "2. Found" || echo "2. Not found"
 
-# Professional pattern: abort on failure
-mkdir -p /tmp/myapp && echo "Dir ready" || { echo "Failed to create dir"; exit 1; }
+# Pattern 3: abort on failure with a message (production pattern)
+mkdir -p /tmp/myapp && echo "3. Dir ready" || { echo "3. Failed to create dir"; exit 1; }
 ```
 
-> `{ cmd; exit 1; }` is a command group — use it with `||` when you need multiple commands on failure.
+> **When to use each:**
+> - `$?` → when you need the actual code value or complex logic
+> - `&&` / `||` → quick inline checks in scripts
+> - `|| { ...; exit 1; }` → bail out with a message on critical failures
+>
+> `{ cmd; exit 1; }` is a **command group** — the braces run both commands when the left side fails.
 </details>
 
 ---
@@ -310,7 +354,7 @@ mkdir -p /tmp/myapp && echo "Dir ready" || { echo "Failed to create dir"; exit 1
 
 > Topics: `for`, `while`, `read -r`, `break`, `continue`, file globs
 
-**5.1** Loop over a list of services and print whether each binary exists on the system.
+**5.1** Loop over an array of service names and check whether each binary is installed.
 <details><summary>Solution</summary>
 
 ```bash
@@ -319,56 +363,59 @@ services=(nginx git docker kubectl node)
 
 for svc in "${services[@]}"; do
   if command -v "$svc" &>/dev/null; then
-    echo "[OK]     $svc"
+    echo "[OK]      $svc"
   else
     echo "[MISSING] $svc"
   fi
 done
 ```
 
-> `command -v` is the right way to check if a binary exists. Not `which`. Not `type`.
+> `command -v` is the correct way to test for a binary. Not `which` (not POSIX), not `type` (verbose).
+> `"${arr[@]}"` — always quote array expansions to handle elements with spaces.
 </details>
 
-**5.2** Read `practice/../logs/app.log` line by line and print only the ERROR lines.
+**5.2** Read `/etc/shells` line by line and print only lines that don't start with `#`.
 <details><summary>Solution</summary>
 
 ```bash
 #!/bin/bash
-logfile="../logs/app.log"
 
 while read -r line; do
-  if [[ "$line" == *"[ERROR]"* ]]; then
-    echo "$line"
-  fi
-done < "$logfile"
+  [[ "$line" == "#"* ]] && continue
+  [[ -z "$line" ]] && continue
+  echo "$line"
+done < /etc/shells
 ```
 
-> Always use `read -r` — without `-r`, backslashes are interpreted. `< file` feeds the file into the loop as stdin.
+> **Always `read -r`** — without `-r`, a backslash at end of line merges it with the next line.
+> `< file` redirects the file into the loop as stdin — this is faster and more correct than `cat file | while read`.
 </details>
 
-**5.3** Loop over all `.sh` files in `../scripts/` using a glob (not `ls`) and print each filename and its line count.
+**5.3** Loop over all `.sh` files in `../scripts/` using a glob (never `ls`) and print each filename with its line count.
 <details><summary>Solution</summary>
 
 ```bash
 #!/bin/bash
 
 for script in ../scripts/*.sh; do
-  [[ -f "$script" ]] || continue   # skip if glob matched nothing
+  [[ -f "$script" ]] || continue       # guard: skip if glob matched nothing
   lines=$(wc -l < "$script")
-  echo "${script##*/}: $lines lines"
+  echo "${script##*/}: $lines lines"   # ##*/ strips the path, leaving just the filename
 done
 ```
 
-> **Never** use `$(ls *.sh)` — it breaks on filenames with spaces. Globs are safe and built-in.
+> **Never `$(ls *.sh)`** — breaks on filenames with spaces and is slower.
+> Globs are expanded by bash itself, safe and instant.
+> The `[[ -f ]] || continue` guard handles the edge case where no `.sh` files exist (glob returns literal `*.sh`).
 </details>
 
 ---
 
 ## Level 6 — Functions
 
-> Topics: defining functions, `local`, return values, reusability
+> Topics: defining functions, `local`, return values (exit codes vs echo), `set -euo pipefail`
 
-**6.1** Write a function `log_info` and `log_error` that prefix messages with `[INFO]` and `[ERROR]` plus a timestamp.
+**6.1** Write `log_info` and `log_error` functions that prefix messages with `[INFO]`/`[ERROR]` and a timestamp. `log_error` should write to stderr.
 <details><summary>Solution</summary>
 
 ```bash
@@ -387,10 +434,11 @@ log_error "Database connection failed"
 log_info "Done"
 ```
 
-> `$*` inside a function = all arguments passed to the function. `>&2` sends to stderr.
+> `$*` inside a function = all arguments passed to it, as one string. Fine here since we're just printing.
+> `>&2` sends output to stderr — errors go to stderr, normal output goes to stdout. This matters when piping.
 </details>
 
-**6.2** Write a function `file_exists` that returns exit code 0 if a file exists, 1 if not. Use it with `if`.
+**6.2** Write a `file_exists` function that returns exit code 0 if a file exists, 1 if not. Compose it with `if`.
 <details><summary>Solution</summary>
 
 ```bash
@@ -398,7 +446,7 @@ log_info "Done"
 
 file_exists() {
   local path="$1"
-  [[ -f "$path" ]]
+  [[ -f "$path" ]]   # last command's exit code becomes the function's exit code
 }
 
 if file_exists "/etc/passwd"; then
@@ -408,10 +456,14 @@ else
 fi
 ```
 
-> Functions return exit codes, not values. Use `local` to prevent variable leaks into global scope.
+> **Functions have two ways to return data:**
+> 1. **Exit code** (0/1) — for pass/fail decisions, used with `if`/`&&`/`||`
+> 2. **Echo** — for returning a string value, captured with `result=$(my_func)`
+>
+> `local` keeps the variable inside the function. Without it, `path` would leak into global scope.
 </details>
 
-**6.3** Refactor this messy script into functions. Add `set -euo pipefail` at the top.
+**6.3** Refactor this flat script into functions with proper structure. Add `set -euo pipefail`.
 
 ```bash
 #!/bin/bash
@@ -427,41 +479,51 @@ echo "Done"
 set -euo pipefail
 
 DEPLOY_DIR="/tmp/deploy"
+SOURCE_FILE="/etc/hostname"   # safe to copy — readable by all users
+
+log_info() { echo "[INFO] $*"; }
 
 setup_dir() {
   mkdir -p "$DEPLOY_DIR"
+  log_info "Directory ready: $DEPLOY_DIR"
 }
 
 copy_files() {
-  cp /etc/hostname "$DEPLOY_DIR/"
+  cp "$SOURCE_FILE" "$DEPLOY_DIR/"
+  log_info "Copied $SOURCE_FILE"
 }
 
 main() {
-  echo "[INFO] Starting"
+  log_info "Starting"
   setup_dir
   copy_files
-  echo "[INFO] Done"
+  log_info "Done"
 }
 
 main "$@"
 ```
 
-> `set -euo pipefail` is the professional header: `-e` exits on error, `-u` errors on unset variables, `-o pipefail` catches failures in pipes. `main "$@"` passes all script args into main.
+> **`set -euo pipefail` explained:**
+> - `-e` — exit immediately if any command fails (non-zero exit code)
+> - `-u` — treat unset variables as errors (catches typos like `$DEPOY_DIR`)
+> - `-o pipefail` — catch failures inside pipes (`false | true` would otherwise succeed)
+>
+> **`main "$@"`** — always call main with all script arguments so the function can use `$1`, `$2`, etc.
+> This is the standard structure for any non-trivial bash script.
 </details>
 
 ---
 
 ## Level 7 — Integration Challenge
 
-> Write a complete, production-quality script from scratch. No copy-paste.
+> Write a complete, production-quality script from scratch. No copy-paste. No looking at previous levels.
+> When done: run `shellcheck` on it, then run it with `bash -x`.
 
 **The Challenge:** Write `check-services.sh` that:
-1. Takes a list of services as arguments (`$@`)
-2. Falls back to a default list `(nginx git docker)` if none given
-3. For each service: check if it exists with `command -v`
-4. Print `[OK]` or `[MISSING]` with the service name
-5. At the end, print a summary: `X/Y services available`
-6. Exit with code 1 if any service is missing
+1. Takes a list of services as arguments — falls back to `(nginx git docker)` if none given
+2. For each service, check with `command -v` — print `[OK]` or `[MISSING]`
+3. At the end, print a summary line: `X/Y services available`
+4. Exit 1 if any service is missing, exit 0 if all found
 
 <details><summary>Solution</summary>
 
@@ -469,13 +531,11 @@ main "$@"
 #!/bin/bash
 set -euo pipefail
 
-# --- Config
 DEFAULT_SERVICES=(nginx git docker)
 
-# --- Functions
-log_info()  { echo "[INFO]  $*"; }
-log_ok()    { echo "[OK]    $*"; }
-log_miss()  { echo "[MISSING] $*"; }
+log_info() { echo "[INFO]    $*"; }
+log_ok()   { echo "[OK]      $*"; }
+log_miss() { echo "[MISSING] $*"; }
 
 check_service() {
   local svc="$1"
@@ -500,24 +560,31 @@ main() {
   local total=${#services[@]}
   local ok=0
 
-  log_info "Checking ${total} services..."
+  log_info "Checking $total services..."
+  echo ""
 
   for svc in "${services[@]}"; do
     check_service "$svc" && (( ok++ )) || true
+    # '|| true' prevents -e from aborting when check_service returns 1
   done
 
   echo ""
   echo "${ok}/${total} services available"
 
-  [[ $ok -eq $total ]]
+  [[ $ok -eq $total ]]   # exit 0 if all found, exit 1 if any missing
 }
 
 main "$@"
 ```
 
-> Run it: `bash check-services.sh` or `bash check-services.sh git curl node`
-> Debug it: `bash -x check-services.sh`
-> Lint it: `shellcheck check-services.sh`
+> Test it:
+> ```bash
+> bash check-services.sh                    # uses defaults
+> bash check-services.sh git curl vim       # custom list
+> bash -x check-services.sh git             # debug trace
+> shellcheck check-services.sh             # lint
+> echo $?                                   # check exit code
+> ```
 </details>
 
 ---
@@ -525,64 +592,71 @@ main "$@"
 ## Quick Reference
 
 ```bash
-# Header every script should have
+# Every script should start with:
 #!/bin/bash
 set -euo pipefail
 
-# Variables
+# ── Variables ────────────────────────────────────────────
 name="value"             # no spaces around =
 echo "$name"             # always quote
-echo "${name}suffix"     # braces for boundary
-result=$(command)        # command substitution
+echo "${name}suffix"     # braces = explicit boundary
+result=$(command)        # capture command output
 
-# Arguments
+# ── Arguments ────────────────────────────────────────────
 $0   # script name
-$1   # first arg
-$#   # arg count
-$@   # all args (quoted separately)
+$1   # first argument
+$#   # argument count
+$@   # all arguments as separate words (always quote: "$@")
 
-# Default values
-${var:-default}          # use default if var unset/empty
+# ── Default values ───────────────────────────────────────
+${var:-default}          # use default if var is unset or empty
+${var:=default}          # use AND assign default if unset
 
-# Parameter expansion (no subprocesses!)
+# ── Parameter expansion (no subprocesses!) ───────────────
 ${#var}                  # string length
-${var##*/}               # basename (remove longest prefix up to /)
-${var%/*}                # dirname (remove shortest suffix from /)
-${var##*.}               # extension (remove longest prefix up to .)
-${var%%.*}               # base name without any extension
+${var##*/}               # basename  (longest prefix to last /)
+${var%/*}                # dirname   (shortest suffix from last /)
+${var##*.}               # extension (longest prefix to last .)
+${var%%.*}               # stem      (longest suffix from first .)
 ${var/old/new}           # replace first match
 ${var//old/new}          # replace all matches
-${var^^}                 # uppercase
-${var,,}                 # lowercase
+${var^^}                 # uppercase all
+${var,,}                 # lowercase all
 
-# Tests — always [[ ]], never [ ]
-[[ -f "$f" ]]            # is a file
+# ── Tests — always [[ ]], never [ ] ──────────────────────
+[[ -f "$f" ]]            # is a regular file
 [[ -d "$d" ]]            # is a directory
+[[ -r "$f" ]]            # is readable
+[[ -x "$f" ]]            # is executable
 [[ -z "$s" ]]            # string is empty
 [[ -n "$s" ]]            # string is not empty
 [[ $a -eq $b ]]          # numbers equal
 [[ $a -gt $b ]]          # greater than
-[[ "$s" == "val" ]]      # string match
+[[ "$s" == "val" ]]      # string equality
+[[ "$s" =~ ^[0-9]+$ ]]  # regex match
 
-# Loops
-for item in "${arr[@]}"; do ... done   # array
-for f in *.sh; do ... done             # glob (not ls!)
-while read -r line; do ... done < file # file line by line
+# ── Loops ────────────────────────────────────────────────
+for item in "${arr[@]}"; do ... done     # array (quoted!)
+for f in *.sh; do ... done               # glob — never $(ls)
+while read -r line; do ... done < file   # file line by line
 
-# Functions
+# ── Functions ────────────────────────────────────────────
 my_func() {
-  local var="$1"   # local scope
-  echo "$var"      # return data via echo
-}                  # return exit code implicitly
+  local var="$1"         # local = stays inside function
+  echo "$var"            # return a value: capture with $(...)
+  return 0               # return an exit code: use with if/&&
+}
 
-# Exit codes
-exit 0    # success
-exit 1    # failure
-$?        # last exit code
-cmd && echo ok || echo fail
+# ── Exit codes ───────────────────────────────────────────
+exit 0                        # success
+exit 1                        # failure
+$?                            # exit code of last command
+cmd && echo ok || echo fail   # inline success/failure
+cmd || { echo "fail"; exit 1; }  # abort with message
 
-# Debug
-bash -x script.sh     # trace all commands
-set -x / set +x       # toggle inside script
-shellcheck script.sh  # lint before running
+# ── Debug ────────────────────────────────────────────────
+bash -x script.sh    # trace all commands
+set -x               # start trace inside script
+set +x               # stop trace
+shellcheck script.sh # lint — run before every commit
 ```
