@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Arrays
+fruits=("apple" "banana" "cherry")
+echo "First: ${fruits[0]}"
+echo "All: ${fruits[@]}"
+echo "Count: ${#fruits[@]}"
+
+# Function
+greet() {
+  local name="$1"
+  echo "Hello, $name!"
+}
+
+greet "Juanes"
+greet "World"
+
+# Function with return (exit code)
+is_even() {
+  local n="$1"
+  (( n % 2 == 0 ))
+}
+
+if is_even 4; then
+  echo "4 is even"
+fi

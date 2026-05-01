@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Default values
+name="${1:-world}"
+log_level="${LOG_LEVEL:-info}"
+echo "Hello, $name (log: $log_level)"
+
+# String length
+password="secretpass"
+echo "Length: ${#password}"
+
+# Remove suffix / prefix
+filepath="/home/user/report.tar.gz"
+filename="${filepath##*/}"   # report.tar.gz (basename)
+directory="${filepath%/*}"   # /home/user (dirname)
+extension="${filename##*.}"  # gz
+basename="${filename%%.*}"   # report
+
+echo "filename:  $filename"
+echo "directory: $directory"
+echo "extension: $extension"
+echo "basename:  $basename"
+
+# Search and replace
+text="hello world world"
+echo "${text/world/bash}"   # first match
+echo "${text//world/bash}"  # all matches
+
+# Case transformation
+echo "${name^^}"  # uppercase
+echo "${name,,}"  # lowercase

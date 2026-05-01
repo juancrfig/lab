@@ -1,0 +1,9 @@
+#!/bin/bash
+
+HOSTNAME=$(hostname)
+UPTIME=$(uptime -p)
+MEMORY=$(free -h | awk '/^Mem:/ {print $7}')
+
+echo "Host:   $HOSTNAME"
+echo "Uptime: $UPTIME"
+echo "Avail:  $MEMORY"

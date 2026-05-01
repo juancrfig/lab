@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Basic assignment (no spaces around =)
+name="Juanes"
+env="production"
+port=3000
+
+# Accessing variables
+echo "Name: $name"
+echo "Env:  ${env}"       # braces = explicit boundary
+echo "Port: ${port}"
+
+# Command substitution
+current_date=$(date +%Y-%m-%d)
+echo "Date: $current_date"
+
+# Single vs double quotes
+echo "Double: $name"      # interpolates variable
+echo 'Single: $name'      # literal string
+
+# Readonly
+readonly MAX_RETRIES=3
+echo "Max retries: $MAX_RETRIES"
+
+# Arithmetic
+count=10
+echo "Double: $(( count * 2 ))"

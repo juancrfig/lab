@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Exit codes
+ls /nonexistent 2>/dev/null
+echo "Exit code: $?"
+
+# AND / OR
+mkdir -p /tmp/testdir && echo "Created" || echo "Failed"
+
+# [[ ]] tests
+file="/etc/passwd"
+[[ -f "$file" ]] && echo "$file exists" || echo "not found"
+
+# Numeric
+count=5
+[[ $count -gt 3 ]] && echo "$count is greater than 3"
+
+# String
+env="production"
+[[ "$env" == "production" ]] && echo "Running in prod!"
+
+# case
+case "$env" in
+  production) echo "Prod config" ;;
+  staging)    echo "Staging config" ;;
+  *)          echo "Unknown env" ;;
+esac

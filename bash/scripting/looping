@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# For loop
+for service in nginx redis postgres; do
+  echo "Checking $service..."
+done
+
+# While loop
+count=0
+while [[ $count -lt 3 ]]; do
+  echo "count: $count"
+  (( count++ ))
+done
+
+# Read file line by line
+while read -r line; do
+  echo "Line: $line"
+done < /etc/hostname
