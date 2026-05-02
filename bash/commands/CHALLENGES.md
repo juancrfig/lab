@@ -46,7 +46,10 @@ No peeking at SOLUTIONS.md until you've run your own answer.
 1. Extract only usernames from `users.tsv` (skip header).
 2. List all unique regions from `sales.csv`.
 3. Which product appears most in `sales.csv`?
-4. Print all env var names from `app.env` in lowercase.
+4. Extract all variable names from `app.env` (skip comments, skip values).
+   Run it once to get the names as-is.
+   Then pipe to `tr` to lowercase them.
+   Compare both outputs — that's what `tr` does.
 5. Convert `sales.csv` commas to pipes `|`, preview first 5 rows.
 6. For each `.env` file, print its name and how many variables it defines.
 
