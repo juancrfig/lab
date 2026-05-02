@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# This is a test to see how much takes me to complete all the challenges from the commands folder
+# START TIME: Sat May  2 12:30:37 PM -05 2026
+
+
+# Block 1
+
+find . -type f | wc -l 
+find . -name "*.log" | xargs du -sh | sort -n
+find scripts/ -type f | xargs grep "ERROR" -l
+find . -type f | xargs du -sh | sort -n | head -3
+find configs/ -name "*.env" -o -name "*.conf"
+
+# Block 2
+
+find . -name "app.log" | xargs grep "ERROR" -c
+find . -name "nginx-access.log" | xargs grep "500"
+find logs/ -type f | xargs grep "timeout" -ln
+find . -type f | xargs grep -Ei "password|secret|jwt"
+find . -name "deploy.log" | xargs grep "v1.4.0"
+
+# Block 3
+
+find . -name "nginx-access.log" | xargs cut -d" " -f1 | sort | uniq -c | sort 
+find - -name "nginx-access.log" | xargs grep -oE " [0-9]{3} " | sort -u
+chmod 000 locked.log
+grep "[ERROR]" . -r > /tmp/errors.txt 2> /dev/null
+grep -Eic "info|warn|error" app.log
+grep -E "[45][0-9]{2}" "nginx-access.log"
+
+
+STOP: Sat May  2 12:46:14 PM -05 2026
+CONTINUE: Sat May  2 02:20:58 PM -05 2026
+
+echo "Block 4"
+
+find . -name "users.csv" | xargs cut -f2
+find . -name "sales.csv" | xargs cut -d"," -f7 | sort -u
+find . -name "app.env" | cut -d"=" -f1 | tr [:upper:] [:lower:]
+find . -name "sales.csv" | tr "," "|" | head -5
+
+echo "Block 5"
+
+find . -name "*.env" 
+chmod 600 file.env
+
+ls . # search for --4 permissions
+
+echo "Block 6"
+
+journalctl -n 20
+journalctl -b | xargs grep -iE "error|err|failure"
+journalctl -f | xargs grep -iE "error|fail"
+journalctl --since "1 hour ago" >> "$(date +%F).log"
+
+echo "Block 7"
+
+ps aux | wc -l
+ps aux -sort=-%mem | head -3
+uptime -s
+free -h
+
+echo "Finish"
+echo "Finished at: Sat May  2 02:35:01 PM -05 2026
