@@ -49,11 +49,9 @@ No peeking at SOLUTIONS.md until you've run your own answer.
 
 ## Block 5 — Permissions
 
-1. Check permissions on both scripts in `scripts/`.
-2. Make both scripts executable. Verify.
-3. Lock down all `.env` files — owner read/write only. Verify.
-4. Prove permissions work: create a file, lock it to `600`, try to read it as another user.
-5. Find any world-writable files under `practice/`.
+1. Lock down all `.env` files — owner read/write only. Verify.
+2. Prove permissions work: create a file, lock it to `600`, try to read it as another user.
+3. Find any world-writable files under `practice/`.
 
 ---
 

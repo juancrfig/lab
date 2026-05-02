@@ -105,16 +105,11 @@ tr ',' '|' < practice/data/sales.csv | head -5
 ## Block 5 — Permissions
 
 ```bash
+
 # 1
-ls -l practice/scripts/
-
-# 2
-chmod 755 practice/scripts/*.sh && ls -l practice/scripts/
-
-# 3
 chmod 600 practice/configs/*.env && ls -l practice/configs/
 
-# 4
+# 2
 echo "top secret" > /tmp/private.txt
 chmod 600 /tmp/private.txt
 sudo useradd -m alice
@@ -123,7 +118,7 @@ chmod 644 /tmp/private.txt
 sudo -u alice cat /tmp/private.txt   # works
 rm /tmp/private.txt && sudo userdel -r alice
 
-# 5
+# 3
 find practice/ -type f -perm /o+w
 ```
 
