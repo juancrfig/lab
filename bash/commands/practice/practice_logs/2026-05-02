@@ -14,4 +14,38 @@ echo "============="
 echo "Block 6"
 echo "============="
 
+journalctl -rn 20
 
+echo "-------------------"
+
+echo "How many error-level events since last boot?"
+
+journalctl -b -p err
+
+echo "========================"
+
+journalctl -f | grep -iE "error|fail"
+
+echo "==========================="
+
+journalctl --since "1 hour ago" -p err > ~/errors/$(date +%F).log
+
+echo "========================="
+
+echo "Block 7"
+echo "========================"
+
+echo "How many processes are running right now?"
+ps aux | tail -n +2 | wc -l 
+
+echo "========================="
+
+ps aux --sort=-%mem | head -3
+
+echo "============================"
+
+uptime -s 
+
+echo "============================"
+
+free -h

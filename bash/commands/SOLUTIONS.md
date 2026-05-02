@@ -134,17 +134,9 @@ journalctl -rn 20
 journalctl -b -p err | wc -l
 
 # 3
-journalctl -u ssh | grep -i "failed"
-# some systems: journalctl -u sshd
-
-# 4
-journalctl -b -p err -o cat | sort | uniq -c | sort -rn | head -5
-# -o cat strips metadata so uniq groups by message content
-
-# 5
 journalctl -f | grep -iE "error|fail"
 
-# 6
+# 4
 journalctl --since "1 hour ago" -p err > ~/errors_$(date +%Y%m%d_%H%M).txt
 ```
 
@@ -157,7 +149,7 @@ journalctl --since "1 hour ago" -p err > ~/errors_$(date +%Y%m%d_%H%M).txt
 ps aux | tail -n +2 | wc -l
 
 # 2
-ps aux --sort=-%mem | head -6
+ps aux --sort=-%mem | head -3
 
 # 3
 uptime -s
@@ -165,53 +157,4 @@ uptime -s
 # 4
 free -h
 # Read 'available' column, not 'free' — Linux caches disk in RAM, that's normal
-
-# 5
-echo "── Processes ──" && ps aux | tail -n +2 | wc -l && \
-echo "── Top RAM ────" && ps aux --sort=-%mem | head -4 && \
-echo "── Last Boot ──" && uptime -s && \
-echo "── Memory ─────" && free -h
-```
-
----
-
-## Cheat Sheet
-
-```bash
-# find
-find . -type f | wc -l
-find . -name "*.ext" | xargs du -sh | sort -rh | head -5
-find . \( -name "*.env" -o -name "*.conf" \)
-find . -type f -perm /o+w
-
-# grep
-grep -c "pattern" file
-grep -rn "pattern" dir/
-grep -E "pat1|pat2" file
-grep -oE ' [0-9]{3} ' file | tr -d ' ' | sort -u
-
-# streams
-cmd > out.txt          # overwrite
-cmd >> out.txt         # append
-cmd 2>/dev/null        # discard stderr
-cmd > all.txt 2>&1     # stdout + stderr together
-
-# cut / uniq / tr
-tail -n +2 file | cut -d, -f2 | sort -u
-cut -d' ' -f1 file | sort | uniq -c | sort -rn
-tr ',' '|' < file
-
-# permissions
-chmod 600 *.env    # secrets
-chmod 755 *.sh     # scripts
-find . -perm /o+w  # world-writable audit
-
-# journalctl
-journalctl -rn 50
-journalctl -b -p err -o cat | sort | uniq -c | sort -rn | head -5
-journalctl -f | grep -iE "error|fail"
-
-# processes
-ps aux --sort=-%mem | head -6
-uptime -s && free -h
 ```

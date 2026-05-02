@@ -59,10 +59,8 @@ No peeking at SOLUTIONS.md until you've run your own answer.
 
 1. Show last 20 journal entries, newest first.
 2. How many error-level events since last boot?
-3. Show SSH logs filtered for failed login attempts.
-4. Top 5 most repeated error messages since last boot.
-5. Watch live logs, show only lines with `error` or `fail`.
-6. Save the last hour's errors to a timestamped file.
+3. Watch live logs, show only lines with `error` or `fail`.
+4. Save the last hour's errors to a timestamped file.
 
 ---
 
@@ -72,4 +70,3 @@ No peeking at SOLUTIONS.md until you've run your own answer.
 2. Which process uses the most memory?
 3. When was the system last booted?
 4. How much memory is available?
-5. One-liner: print processes count, top RAM user, last boot, memory summary.
