@@ -72,22 +72,9 @@ grep -r "\[ERROR\]" logs/ > /tmp/errors.txt
 
 # step 2: silence it
 grep -r "\[ERROR\]" logs/ > /tmp/errors.txt 2>/dev/null
-# terminal is clean. matches from readable files still saved to the file.
-cat /tmp/errors.txt
-
-# restore
-chmod 644 logs/locked.log
-
-# > redirects stdout. 2>/dev/null discards stderr. They are independent streams.
-# The matches from app.log and deploy.log are still saved — only the error message disappears.
 
 # 4
 grep -oE '\[(INFO|WARN|ERROR)\]' practice/logs/app.log | sort | uniq -c
-
-# 5
-grep -E ' [45][0-9]{2} ' practice/logs/nginx-access.log \
-  | grep -oE '"(GET|POST|PUT|DELETE|PATCH) [^ ]+' \
-  | sort -u
 ```
 
 ---

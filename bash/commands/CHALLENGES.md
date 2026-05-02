@@ -29,22 +29,18 @@ No peeking at SOLUTIONS.md until you've run your own answer.
 
 1. Count requests per IP in `nginx-access.log`, sorted most to least.
 2. List all unique HTTP status codes in `nginx-access.log`.
-3. Lock `locked.log` so it can't be read:
-   ```bash
-   chmod 000 logs/locked.log
-   ```
+3. Lock `locked.log` so it can't be read.
    Run grep recursively across all of `logs/` searching for `[ERROR]`, redirect matches to `/tmp/errors.txt`.
-   Do it **twice**: first without silencing stderr so you see the Permission denied, then add `2>/dev/null` so it disappears.
-   Restore when done: `chmod 644 logs/locked.log`
 4. Count log entries per level (INFO, WARN, ERROR) in `app.log`.
-5. Show unique endpoints that returned 4xx or 5xx in `nginx-access.log`.
+5. Show lines that returned 4xx or 5xx in `nginx-access.log`.
 
----
+--
 
 ## Block 4 — `cut` / `uniq` / `tr` / `xargs`
 
 1. Extract only usernames from `users.tsv` (skip header).
 2. List all unique regions from `sales.csv`.
+<<<<<<< HEAD
 3. Which product appears most in `sales.csv`?
 4. Extract all variable names from `app.env` (skip comments, skip values).
    Run it once to get the names as-is.
@@ -52,6 +48,7 @@ No peeking at SOLUTIONS.md until you've run your own answer.
    Compare both outputs — that's what `tr` does.
 5. Convert `sales.csv` commas to pipes `|`, preview first 5 rows.
 6. For each `.env` file, print its name and how many variables it defines.
+=======
 
 ---
 
