@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo "Block 5"
+echo "============="
+echo "Lock down all .env files, owner read/write only
+
+find . -name "*.env" | xargs chmod 600 
+
+echo "============="
+
+find . -perm -o=w
+
+echo "============="
+echo "Block 6"
+echo "============="
+
+
