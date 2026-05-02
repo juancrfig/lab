@@ -98,10 +98,6 @@ grep -v '^#' practice/configs/app.env | grep '=' | cut -d= -f1 | tr '[:upper:]' 
 # 5
 tr ',' '|' < practice/data/sales.csv | head -5
 # tr < file — no cat needed (UUOC: Useless Use of Cat)
-
-# 6
-find practice/configs/ -name "*.env" | xargs -I{} sh -c 'echo "{}:"; grep -vc "^#" {}'
-# grep -vc "^#" counts non-comment lines
 ```
 
 ---

@@ -77,3 +77,12 @@ find . -name "~/Projects/lab/bash/commands/practice" -name "sales.csv" | tail -n
 
 echo "==============================="
 
+cut -d"=" -f1 app.env | tr [:upper:] [:lower:]
+
+echo "==================================="
+
+tr "," "|" < sales.csv > sales_with_pipes.csv
+
+echo "========================="
+
+
