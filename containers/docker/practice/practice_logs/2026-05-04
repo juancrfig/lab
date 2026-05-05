@@ -1,0 +1,138 @@
+#!/bin/bash
+
+echo "Block 1"
+echo "============="
+
+echo "1. Search Docker Hub for the official 'nginx' image"
+docker search nginx | grep -i official
+
+echo "2. Pull 'nginx' with tag '1.28' and variant 'alpine'"
+docker pull nginx:1.28-alpine
+
+echo "3. list all locally stored images"
+docker images -a
+
+echo "4. Pull ubuntu tag 24.04"
+docker pull ubuntu:24.04
+
+echo "5. List images again, confirm both are there"
+docker images
+
+echo "======================================================="
+echo "Block 2"
+echo "======================================================="
+
+echo "First exercise"
+docker run --name webserver -d -p 8080:80 nginx:1.28-alpine
+
+echo "How to confirm a container is running?"
+docker ps | grep nginx && echo "nginx is running"
+
+echo "Third, run an ubuntu image...."
+docker run --name sandbox -it ubuntu:24.04 bash
+
+echo "Fourth. List all containers running and stopped, and note their status column"
+docker ps -a
+
+echo "Fifth. Stop webserver"
+docker stop webserver
+
+echo "6th. Remove webserver"
+docker rm webserver
+
+echo "7th. Remove sandbox"
+docker rm sandbox
+
+echo "========================================================="
+echo "Block 3"
+echo "========================================================="
+
+echo "1th"
+docker run --rm alpine:3.20 hostname
+
+echo "2nd"
+docker ps -a
+
+echo "3rd"
+docker run --rm --env-file app.env ubuntu:24.04 env
+
+echo "4th"
+docker run --name secure-web -d --env-file app.env nginx:1.28-alpine
+
+echo "5th"
+docker exec secure-web env | grep DB_PASSWORD
+
+echo "6th"
+docker stop secure-web
+docker rm secure-web
+
+echo "=========================================================="
+echo "Block 4"
+echo "=========================================================="
+
+echo "1st"
+docker run --name webserver -d nginx:1.28-alpine
+
+echo "2nd"
+docker exec -it webserver sh
+
+echo "3rd"
+ps aux && ls /etc/nginx && exit
+
+echo "4th"
+docker exec webserver whoami
+
+echo "5th"
+docker exec webserver ls /etc/nginx
+
+echo "6th"
+docker logs --tail 20 webserver
+
+echo "7th"
+docker inspect webserver | grep -Ei "ip|address"
+
+echo "8th"
+docker stop webserver && docker rm webserver
+
+echo "=============================================================="
+echo "Block 5"
+echo "=============================================================="
+
+echo "1st"
+docker volume create mydata
+
+echo "2nd"
+docker run --rm  -v mydata:/data alpine sh -c "echo 'hello from volume' >> /data/message.txt"
+
+echo "3rd"
+docker run --rm -v mydata:/data alpine sh -c "cat /data/message.txt"
+
+echo "4th - 10th"
+echo "POSTGRES_PASSWORD=secretpass" > pg.env
+docker volume create pg-data
+docker --rm --name mydb -v pg-data:/var/lib/postgresql/data --env-file pg.env --restart=unless-stopped -d postgres:16
+docker rm -f mydb
+docker volume rm pg-data
+
+echo "================================================================"
+echo "Block 6"
+echo "================================================================"
+
+
+docker build -t greeter:1.0.0 .
+docker run -e GREETING=Hola -e NAME=Docker --rm greeting:1.0.0
+docker history greeting:1.0.0
+
+echo "================================================================"
+echo "Block 7"
+echo "================================================================"
+
+echo "List all containers in any state"
+docker ps -a 
+echo "Remove all stopped containers in one command"
+docker container prune
+
+docker rmi greeter:1.0.0
+
+docker system df
+docker image prune -a
