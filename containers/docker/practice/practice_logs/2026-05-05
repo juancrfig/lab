@@ -1,0 +1,135 @@
+#!/bin/bash
+
+echo "Block 1"
+echo "========="
+
+# 1st
+docker search nginx | grep -i official
+
+# 2nd
+docker pull ngix:1.28-alpine
+
+# 3rd
+docker images
+
+# 4th
+docker pull ubuntu:24.04
+
+# 5th
+docker images
+
+
+echo "Block 2"
+echo "========"
+
+# 1st
+docker run --name webserver -p 8080:80 -d nginx:1.28-alpine
+
+# 2nd
+docker ps | grep webserver && echo "webserver running!"
+
+# 3rd
+docker run --name sandbox -it bash
+
+# 4th
+docker ps -a
+
+# 5th
+docker stop webserver
+
+# 6th
+docker rm webserver
+
+# 7th
+docker rm sandbox
+
+
+echo "Block 3"
+echo "========="
+
+# 1st
+docker run --rm alpine:3.20 sh -c hostname
+
+# 2nd
+docker ps -a
+
+# 3rd
+docker run --env-file app.env --rm ubuntu:24.04 env
+
+# 4th
+docker run --name secure-web --env-file app.env -d
+
+# 5th
+docker exec secure-web env | grep DB_PASSWORD
+
+# 6th
+docker stop secure-web
+docker rm secure-web
+
+
+echo "Block 4"
+echo "========"
+
+# 1st
+docker run --name webserver -d nginx:1.28-alpine
+
+# 2nd
+docker exec webserver sh
+
+# 3rd
+ps aux 
+ls /etc/nginx
+exit
+
+# 4th
+docker exec webserver whoami 
+
+# 5th
+docker exec webserver sh -c "ls /etc/nginx"
+
+# 6th
+docker logs --tail 3 webserver
+
+# 7th 
+docker inspect | grep -i IPAddress
+
+# 8th
+docker stop webserver
+docker rm webserver
+
+
+echo "Block 5"
+echo "========="
+
+# 1st
+docker volume create mydata
+
+# 2nd
+docker run --rm -v mydata:/data alpine:3.20 sh -c 'echo "hello from volume!" > /data/message.txt'
+
+# 3rd
+docker run --rm -v mydata:/data alpine:3.20 sh -c 'cat /data/message.txt'
+
+# 4th
+echo "POSTGRES_PASSWORD=secretpass" > pg.env 
+docker run --name mydb --env-file pg.env -v pg-data:/var/lib/postgresql/data --restart=unless-stopped -d postgres:16
+
+# 5th
+docker exec mydb psql -u  postgres -c "CREATE DATABASE testdb;"
+
+
+echo "Block 6"
+echo "========="
+
+docker run -e GREETING=Hola greeter:1.0.1
+docker run --env-file app.env greeter:1.0.1
+
+
+echo "Block 7"
+echo "========="
+
+docker ps -a 
+
+docker image ls -q | xargs docker rmi
+
+docker system df

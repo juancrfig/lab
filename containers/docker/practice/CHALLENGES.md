@@ -17,7 +17,7 @@ No peeking at SOLUTIONS.md until you've run your own answer.
 
 ## Block 2 — Run & Manage Containers
 
-1. Run an `nginx` image, tag 1.28, variant *alpine*,  container named `webserver`,q in the background, mapping host port `8080` to container port `80`.
+1. Run an `nginx` image, tag 1.28, variant *alpine*,  container named `webserver`, in the background, mapping host port `8080` to container port `80`.
 2. Confirm it's running.
 3. Run an `ubuntu:24.04` container named `sandbox` interactively with a bash shell. Type `exit` to leave.
 4. List **all** containers (running + stopped) and note their STATUS column.
@@ -82,7 +82,7 @@ Work inside `greeter/`.
    - Has `CMD ["./greet"]`
 2. Build it as `greeter:1.0.0`.
 3. Run it with defaults — you should see `Hello, World!`
-4. Run it overriding `-e GREETING=Hola -e NAME=Docker`.
+4. Run it overriding the envs GREETING=Hola and NAME=Docker.
 5. Run it with `--env-file ../app.env` — what does it print for GREETING? Why?
 6. Check the image layers with `docker history greeter:1.0.0`.
 
