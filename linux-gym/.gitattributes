@@ -1,0 +1,6 @@
+# Scripts run inside Linux containers — CRLF would break them on checkout.
+* text=auto
+*.sh text eol=lf
+*.pl text eol=lf
+*.md text eol=lf
+Dockerfile text eol=lf
