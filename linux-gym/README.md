@@ -17,12 +17,24 @@ only the shell. No scenario ever tells you which command to run.
 
 ## Workflow
 
+Two tmux panes. Guide on one, the box on the other.
+
 ```
+# pane A — the guide (spaced-repetition picker + ticket/commands/questions)
+./gym                       # lists today's due tickets, you pick one
+./gym <topic>/<scenario>    # or open one directly
+                            # t/c/q switch pages · x = done → grade it
+
+# pane B — the box
 cd <topic>/<scenario>/
 ./run.sh      # builds the image (first time) and drops you into the box
               # exit and ./run.sh again to resume where you left off
 ./reset.sh    # wipe the container and start the scenario fresh
 ```
+
+Grading (`x` in the guide) drives a Leitner spaced-repetition schedule stored
+in `.gym-ledger`; every grade is logged to `.gym-history`. When you wonder if
+the scheduler needs upgrading, tell Claude to run `DIAGNOSTIC.md`.
 
 ## Topics
 
