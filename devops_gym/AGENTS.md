@@ -65,3 +65,11 @@ cmd1 cmd2 cmd3
 | 04-users-perms | groups adduser deluser chmod chown chgrp su usermod id | 01-offboard-onboard, 02-perm-meltdown |
 | 05-processes | ps pgrep kill fg bg pstree | 01-log-flood, 02-immortal-daemon |
 | 06-services | systemctl journalctl — **parked**: plain container has no systemd PID 1. Unpark plan: systemd-as-PID-1 image run with `--cgroupns=host -v /sys/fs/cgroup:/sys/fs/cgroup` (or podman). Until then, systemd theory rides in 05-processes questions. | — |
+
+## Planned topics (near future)
+
+Missing for mid-level interview coverage; next expansion wave:
+
+- **networking** — ss, curl, dig, ports, "service can't reach DB" scenarios
+- **ssh** — keys, scp, config, agent
+- **systemd** — hands-on units (unparks 06-services via the plan above)
