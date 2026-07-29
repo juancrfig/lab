@@ -59,10 +59,10 @@ cmd1 cmd2 cmd3
 
 | Topic | Commands | Tickets |
 |---|---|---|
-| 01-orientation | whoami who w hostname uname uptime date free lscpu history command -v | 01-amnesia-shift |
+| 01-orientation | whoami who w hostname uname uptime date free lscpu history command -v cat echo | 01-amnesia-shift |
 | 02-files | ls find file stat wc du df touch rm | 01-disk-bloat, 02-mystery-artifacts |
 | 03-text | cat head tail grep sort cut tr xargs wc echo | 01-log-triage, 02-csv-rescue |
-| 04-users-perms | groups adduser deluser chmod chown chgrp su usermod id | 01-offboard-onboard, 02-perm-meltdown |
+| 04-users-perms | groups adduser deluser chmod chown chgrp su usermod id find ls stat | 01-offboard-onboard, 02-perm-meltdown |
 | 05-processes | ps pgrep kill fg bg pstree | 01-log-flood, 02-immortal-daemon |
 | 06-services | systemctl journalctl — **parked**: plain container has no systemd PID 1. Unpark plan: systemd-as-PID-1 image run with `--cgroupns=host -v /sys/fs/cgroup:/sys/fs/cgroup` (or podman). Until then, systemd theory rides in 05-processes questions. | — |
 
