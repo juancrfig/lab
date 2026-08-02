@@ -16,12 +16,12 @@ lab/
 ├── javascript/
 ├── python/
 ├── R/
-├── init_scripts/
 ├── prompts/
-├── linux-gym/       ← legacy gym format (one container per scenario)
-└── devops_gym/      ← current gym (see devops_gym/AGENTS.md)
+└── devops_gym/      ← active gym (see devops_gym/AGENTS.md)
 ```
 
 ## Active work
 
 `devops_gym/` — single shared container, ticket pool grows by topic. See its own AGENTS.md.
+
+Not in Hermes `repo-sync` `CORE_REPOS` — push/pull this repo explicitly when needed.
