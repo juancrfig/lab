@@ -7,6 +7,7 @@ Personal practice repo. Language/tool subdirs hold exercises and experiments.
 
 ```
 lab/
+├── ai/
 ├── algorithms/
 ├── bash/
 ├── c/
