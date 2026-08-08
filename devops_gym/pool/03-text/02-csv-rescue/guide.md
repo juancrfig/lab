@@ -23,7 +23,6 @@ alphabetically sorted, no header, no blanks.
 cat file wc tr cut sort grep xargs echo head tail
 
 ## QUESTIONS
-1. Hands-on: count how many *distinct* teams the dump contains, in one pipeline.
-2. Interview: what actually is a "line" to Unix tools? What are `\n` and `\r` at the byte level, and why does a stray `\r` make `grep pattern$` mysteriously fail?
-3. Interview: everything in Unix is "text streams" — why is that composability the core design idea of the shell? Contrast piping with writing intermediate files: when is each the right call?
-4. Interview: `xargs` exists because pipes connect streams, not arguments. Explain that distinction — what breaks if you pipe a file list straight into a command that ignores stdin?
+1. Interview: what actually is a "line" to Unix tools? What are `\n` and `\r` at the byte level, and why does a stray `\r` make `grep pattern$` mysteriously fail?
+2. Interview: everything in Unix is "text streams" — why is that composability the core design idea of the shell? Contrast piping with writing intermediate files: when is each the right call?
+3. Interview: `xargs` exists because pipes connect streams, not arguments. Explain that distinction — what breaks if you pipe a file list straight into a command that ignores stdin?

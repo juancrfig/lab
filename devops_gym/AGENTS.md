@@ -43,7 +43,7 @@ devops_gym/
 ## COMMANDS
 cmd1 cmd2 cmd3
 ## QUESTIONS
-1. <hands-on + interview-style concept mix>
+1. <interview-style concept question>
 ```
 
 ## Design rules
@@ -51,7 +51,7 @@ cmd1 cmd2 cmd3
 - Never name the command in the ticket. Symptoms only.
 - Storm realism: tickets are incident scenarios, not drills. Multi-command
   solutions; force pipes, globbing, and redirection (`>`, `>>`, `2>`, `2>&1`).
-- QUESTIONS: ~2–3 hands-on + ~2–3 genuine mid-level DevOps interview
+- QUESTIONS: ~3–5 genuine mid-level DevOps interview
   questions probing fundamentals. No trivia.
 - `setup.sh` should itself be good shell-scripting practice to read post-solve.
 
@@ -73,3 +73,4 @@ Missing for mid-level interview coverage; next expansion wave:
 - **networking** — ss, curl, dig, ports, "service can't reach DB" scenarios
 - **ssh** — keys, scp, config, agent
 - **systemd** — hands-on units (unparks 06-services via the plan above)
+- **junior-gauntlet** — **[design by 2026-08-13]** Combo incident: SSH into a wild server with multiple simultaneous issues — zombie processes, missing services, unusual memory usage, and dangerously high load averages. Mimics a real-world demanding scenario. Junior DevOps rite of passage. Mixes processes, files, text, and perms tools in one ticket.

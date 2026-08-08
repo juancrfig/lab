@@ -24,7 +24,6 @@ There's also a report that one entry in the process table looks "undead."
 ps pgrep pstree kill fg bg wc tail grep
 
 ## QUESTIONS
-1. Hands-on: show two different ways to find the writer's PID, one by name-matching and one by reading the process table with your eyes. When does name-matching lie to you?
-2. Interview: what is a zombie process really — what resource does it still hold, who is responsible for cleaning it up, and when do thousands of zombies indicate an application bug?
-3. Interview: explain the relationship between a process, its parent, and PID 1. What happens to children when their parent dies?
-4. Interview: what does `&` at the end of a command actually do, and how is a background job different from a daemon?
+1. Interview: what is a zombie process really — what resource does it still hold, who is responsible for cleaning it up, and when do thousands of zombies indicate an application bug?
+2. Interview: explain the relationship between a process, its parent, and PID 1. What happens to children when their parent dies?
+3. Interview: what does `&` at the end of a command actually do, and how is a background job different from a daemon?

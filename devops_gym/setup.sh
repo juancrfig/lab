@@ -7,13 +7,15 @@ readonly INCIDENT_DAY="2026-07-25"
 # ══ 01-orientation / 01-amnesia-shift ══════════════════════════════
 
 orientation_amnesia_shift() {
-  # A lying handover note from the previous admin.
+  # A lying handover note from the previous admin. NOTE: /etc/motd is only
+  # shown by PAM logins; docker execs bash directly, so install_live_launcher
+  # cats this at the first interactive shell instead.
   cat > /etc/motd <<'EOF'
-=== HANDOVER — dana (off to vacation, unreachable) ===
+=== HANDOVER — Dana (off to vacation, unreachable) ===
 Box: CentOS 7, 64 cores, 128G RAM.
 Rebooted it an hour ago after the kernel patch, all clean.
 Shell is zsh for everyone. Nothing weird in my session history.
-Good luck! — d.
+Good luck!
 EOF
 
   # The previous admin's shell history, left behind for the audit.
@@ -253,6 +255,9 @@ install_live_launcher() {
 # devops_gym: fabricate live incident processes, once per container.
 if [ ! -e /tmp/.gym-live ]; then
   touch /tmp/.gym-live
+  # No PAM login under docker exec, so /etc/motd never self-displays.
+  # First interactive shell is the "login": show the handover note.
+  [ -r /etc/motd ] && cat /etc/motd
   nohup /usr/local/bin/traffic-writer  >/dev/null 2>&1 &
   nohup /usr/local/bin/svc-wrapper     >/dev/null 2>&1 &
   nohup /usr/local/bin/zombie-maker    >/dev/null 2>&1 &

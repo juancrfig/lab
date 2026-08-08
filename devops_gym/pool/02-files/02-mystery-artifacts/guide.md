@@ -21,7 +21,6 @@ Forensics, without modifying any evidence:
 find stat ls file touch wc
 
 ## QUESTIONS
-1. Hands-on: show the difference between a file's modification time, change time, and access time — read all three from one of the planted files. Which of the three can an attacker set arbitrarily, and which betrays them?
-2. Interview: what's the difference between a file's mtime and ctime, and why does a forensics team care about files where mtime is older than ctime?
-3. Interview: why do `ls` and shell globs miss dotfiles by default, and why does that make hidden-file conventions a favorite hiding spot? How do you enumerate a tree so nothing can hide?
-4. Interview: a script named `logo.jpg` — what actually decides whether Linux will execute a file: its extension, its content, or something else?
+1. Interview: what's the difference between a file's mtime and ctime, and why does a forensics team care about files where mtime is older than ctime?
+2. Interview: why do `ls` and shell globs miss dotfiles by default, and why does that make hidden-file conventions a favorite hiding spot? How do you enumerate a tree so nothing can hide?
+3. Interview: a script named `logo.jpg` — what actually decides whether Linux will execute a file: its extension, its content, or something else?

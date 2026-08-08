@@ -24,8 +24,7 @@ requires a full audit trail before anything is destroyed.
 find chown chgrp adduser deluser groups usermod su id ls
 
 ## QUESTIONS
-1. Hands-on: after deleting the contractor, create a file as root, then show what `ls -l` displays for a file whose owning user no longer exists — and explain what's actually stored on disk.
-2. Interview: what happens to a user's running processes and files when you delete the account? Why do offboarding runbooks kill sessions and reassign files *before* `deluser`?
-3. Interview: difference between a user's primary group and supplementary groups? When a user creates a file, which group does it get?
-4. Interview: `su - marina` vs `su marina` — what does the `-` change, and when has skipping it burned people in production?
-5. Interview: why do shared-project directories often use the setgid bit? What problem from this very ticket does it prevent?
+1. Interview: what happens to a user's running processes and files when you delete the account? Why do offboarding runbooks kill sessions and reassign files *before* `deluser`?
+2. Interview: difference between a user's primary group and supplementary groups? When a user creates a file, which group does it get?
+3. Interview: `su - marina` vs `su marina` — what does the `-` change, and when has skipping it burned people in production?
+4. Interview: why do shared-project directories often use the setgid bit? What problem from this very ticket does it prevent?

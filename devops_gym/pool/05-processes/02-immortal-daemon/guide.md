@@ -22,8 +22,7 @@ Take it down for good, and document the kill chain in `~/takedown.txt`:
 ps pgrep pstree kill tail grep
 
 ## QUESTIONS
-1. Hands-on: send the watchdog (while it was alive — or respawn it to demo) three different signals by name and by number, and show where you looked up the signal list without leaving the terminal.
-2. Interview: SIGTERM vs SIGKILL vs SIGHUP — what does each mean by convention, which can a process catch, and why do orchestrators (Docker, Kubernetes, systemd) always send one, wait, then send another?
-3. Interview: why is `kill -9` as a first resort considered malpractice? Name two kinds of damage it can cause that SIGTERM wouldn't.
-4. Interview: this respawn behavior is exactly what a supervisor like systemd provides on purpose. Explain what systemd is, what a unit is, and how `systemctl` + `journalctl` would have made this whole ticket a two-command job.
-5. Interview: how would you stop a service supervised by systemd correctly, and why does killing the process directly not work there either?
+1. Interview: SIGTERM vs SIGKILL vs SIGHUP — what does each mean by convention, which can a process catch, and why do orchestrators (Docker, Kubernetes, systemd) always send one, wait, then send another?
+2. Interview: why is `kill -9` as a first resort considered malpractice? Name two kinds of damage it can cause that SIGTERM wouldn't.
+3. Interview: this respawn behavior is exactly what a supervisor like systemd provides on purpose. Explain what systemd is, what a unit is, and how `systemctl` + `journalctl` would have made this whole ticket a two-command job.
+4. Interview: how would you stop a service supervised by systemd correctly, and why does killing the process directly not work there either?

@@ -21,7 +21,6 @@ Produce evidence, then clean up:
 df du find file stat ls wc rm touch
 
 ## QUESTIONS
-1. Hands-on: rebuild the "top 3 largest files under /var/appdata" evidence as a single pipeline, biggest first.
-2. Interview: `df` says the disk is 90% full, but `du` on every top-level directory adds up to half that. Give two distinct explanations and how you'd confirm each one.
-3. Interview: you deleted a 30G log file but the disk usage didn't drop. Why, and how do you actually reclaim the space without restarting the service?
-4. Interview: what does an inode store, and what two pieces of information does a directory entry actually map together? Why can a filesystem run out of space with `df` showing space free?
+1. Interview: `df` says the disk is 90% full, but `du` on every top-level directory adds up to half that. Give two distinct explanations and how you'd confirm each one.
+2. Interview: you deleted a 30G log file but the disk usage didn't drop. Why, and how do you actually reclaim the space without restarting the service?
+3. Interview: what does an inode store, and what two pieces of information does a directory entry actually map together? Why can a filesystem run out of space with `df` showing space free?
