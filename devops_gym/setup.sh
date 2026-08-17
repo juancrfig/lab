@@ -266,13 +266,54 @@ fi
 EOF
 }
 
-orientation_amnesia_shift
-files_disk_bloat
-files_mystery_artifacts
-text_log_triage
-text_csv_rescue
-users_offboard_onboard
-users_perm_meltdown
-processes_log_flood
-processes_immortal_daemon
-install_live_launcher
+# ══ 02-files / 01-disk-bloat: dedicated runtime filesystem ════════
+
+# The container root is a huge host-backed overlay (~1TB, ~6% used), so the
+# disk-bloat fixtures can NOT live on it: df would never show ~90% there, and
+# we must not fill a terabyte to fake the alarm. Instead the launcher mounts an
+# 88M tmpfs at /var/appdata at first shell (needs SYS_ADMIN → run.sh adds
+# --privileged) and files_disk_bloat() creates the fixtures on that filesystem,
+# so df/du on /var/appdata report a genuinely near-full dedicated filesystem.
+install_disk_bloat_launcher() {
+  cat >> /etc/bash.bashrc <<'EOF'
+
+# devops_gym: mount dedicated small filesystem for the disk-bloat ticket.
+# Runs once per container, at the first interactive shell, as root (juanes has
+# NOPASSWD sudo). Requires SYS_ADMIN, granted by run.sh's --privileged flag.
+if [ ! -e /tmp/.gym-diskbloat ]; then
+  touch /tmp/.gym-diskbloat
+  sudo /setup.sh runtime-disk-bloat
+fi
+EOF
+}
+
+main() {
+  if [[ ${1:-} == "runtime-disk-bloat" ]]; then
+    # Invoked from /etc/bash.bashrc at first interactive shell (as root, after
+    # --privileged grants the mount capability). This is a RUNTIME step so the
+    # /var/appdata fixtures land on the freshly-mounted tmpfs, NOT in the image
+    # layer — otherwise they'd be hidden from df and the scenario would lie.
+    mkdir -p /var/appdata
+    if ! mountpoint -q /var/appdata; then
+      mount -t tmpfs -o size=88M tmpfs /var/appdata
+    fi
+    files_disk_bloat
+    exit 0
+  fi
+
+  # ── build-time broken state (baked into the image layer) ──────────
+  orientation_amnesia_shift
+  # files_disk_bloat is deliberately NOT here. Its fixtures must be created on
+  # the dedicated runtime filesystem (see runtime-disk-bloat above), not here.
+  files_mystery_artifacts
+  text_log_triage
+  text_csv_rescue
+  users_offboard_onboard
+  users_perm_meltdown
+  processes_log_flood
+  processes_immortal_daemon
+  install_live_launcher
+  install_disk_bloat_launcher
+}
+
+main "$@"
