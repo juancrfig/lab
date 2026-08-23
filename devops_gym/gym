@@ -3,6 +3,9 @@
 # spaced-repetition scheduling. Run in one tmux pane; run the scenario's
 # ./run.sh in another. Ledger: .gym-ledger  (relpath  box  next_due).
 set -euo pipefail
+
+clear
+
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 LEDGER="$ROOT/.gym-ledger"
 HISTORY="$ROOT/.gym-history"   # append-only: date  key  grade  old_box  new_box
