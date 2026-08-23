@@ -1,2 +1,1 @@
-.gym-ledger
-.gym-history
+# Progress files are intentionally tracked so gym state can be shared by cloning.
