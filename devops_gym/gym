@@ -80,21 +80,14 @@ pick_scenario(){
   GUIDE="$ROOT/${due[$((n-1))]#./}"
 }
 
-if (($#)); then
-  key=${1%/}; key=${key#pool/}
-  GUIDE="$ROOT/pool/$key/guide.md"
-  [[ -f "$GUIDE" ]] || { echo "ticket not found: $1"; exit 1; }
-else
-  pick_scenario
-fi
-KEY=$(dirname "${GUIDE#$ROOT/}")
-
-# ── parse guide.md ─────────────────────────────────────────────────
-TITLE=$(awk 'NR==1{sub(/^# /,""); print; exit}' "$GUIDE")
 section(){ awk -v s="## $1" '$0==s{f=1;next} /^## /{f=0} f' "$GUIDE"; }
-TICKET=$(section TICKET)
-COMMANDS=$(section COMMANDS | tr -s ' \n' ' ' | sed 's/^ *//;s/ *$//')
-QUESTIONS=$(section QUESTIONS)
+load_guide(){
+  KEY=$(dirname "${GUIDE#$ROOT/}")
+  TITLE=$(awk 'NR==1{sub(/^# /,""); print; exit}' "$GUIDE")
+  TICKET=$(section TICKET)
+  COMMANDS=$(section COMMANDS | tr -s ' \n' ' ' | sed 's/^ *//;s/ *$//')
+  QUESTIONS=$(section QUESTIONS)
+}
 
 # ── paged render loop ──────────────────────────────────────────────
 nav(){
@@ -130,9 +123,25 @@ grade_prompt(){
   esac
 }
 
-view=t
-while :; do
-  case "$view" in t) page_ticket;; c) page_commands;; q) page_questions;; esac
-  read -rsn1 k
-  case "$k" in t|c|q) view=$k;; x) grade_prompt; break;; esac
-done
+show_guide(){
+  local view=t k
+  while :; do
+    case "$view" in t) page_ticket;; c) page_commands;; q) page_questions;; esac
+    read -rsn1 k
+    case "$k" in t|c|q) view=$k;; x) grade_prompt; return;; esac
+  done
+}
+
+if (($#)); then
+  key=${1%/}; key=${key#pool/}
+  GUIDE="$ROOT/pool/$key/guide.md"
+  [[ -f "$GUIDE" ]] || { echo "ticket not found: $1"; exit 1; }
+  load_guide
+  show_guide
+else
+  while :; do
+    pick_scenario
+    load_guide
+    show_guide
+  done
+fi

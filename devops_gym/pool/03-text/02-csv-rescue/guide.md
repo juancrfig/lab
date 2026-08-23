@@ -18,6 +18,8 @@ alphabetically sorted, no header, no blanks.
 4. Some rows are for a team file that may not exist yet; when you check
    for per-team config files under `/etc/crm/`, errors for missing ones
    must be silenced, not sprayed on the terminal.
+5. Verify the final line count by feeding `~/emails.txt` through standard
+   input rather than passing its name as an argument.
 
 ## COMMANDS
 cat file wc tr cut sort grep xargs echo head tail
@@ -26,3 +28,4 @@ cat file wc tr cut sort grep xargs echo head tail
 1. Interview: what actually is a "line" to Unix tools? What are `\n` and `\r` at the byte level, and why does a stray `\r` make `grep pattern$` mysteriously fail?
 2. Interview: everything in Unix is "text streams" — why is that composability the core design idea of the shell? Contrast piping with writing intermediate files: when is each the right call?
 3. Interview: `xargs` exists because pipes connect streams, not arguments. Explain that distinction — what breaks if you pipe a file list straight into a command that ignores stdin?
+4. Interview: compare `command file`, `command < file`, and `producer | command`. What receives a pathname argument, and what receives bytes on standard input?

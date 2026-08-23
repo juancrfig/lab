@@ -7,9 +7,8 @@ readonly INCIDENT_DAY="2026-07-25"
 # ══ 01-orientation / 01-amnesia-shift ══════════════════════════════
 
 orientation_amnesia_shift() {
-  # A lying handover note from the previous admin. NOTE: /etc/motd is only
-  # shown by PAM logins; docker execs bash directly, so install_live_launcher
-  # cats this at the first interactive shell instead.
+  # A lying handover note from the previous admin, shown by the PAM login that
+  # run.sh opens after systemd is ready.
   cat > /etc/motd <<'EOF'
 === HANDOVER — Dana (off to vacation, unreachable) ===
 Box: CentOS 7, 64 cores, 128G RAM.
@@ -29,6 +28,12 @@ top
 exit
 EOF
   chown juanes:juanes /home/juanes/.bash_history
+
+  # Preserve one real-looking prior login so `last` has incident evidence.
+  printf '%s\n%s\n' \
+    '[7] [00421] [p/3 ] [dana    ] [pts/3       ] [192.0.2.44          ] [192.0.2.44    ] [2026-07-25T00:42:00,000000+00:00]' \
+    '[8] [00421] [    ] [        ] [pts/3       ] [                    ] [0.0.0.0       ] [2026-07-25T01:37:00,000000+00:00]' \
+    | utmpdump -r > /var/log/wtmp
 }
 
 # ══ 02-files / 01-disk-bloat ═══════════════════════════════════════
@@ -247,6 +252,54 @@ EOF
   chmod 666 /var/log/watchdog.log
 }
 
+# ══ 06-services / 01-inventory-api-down ════════════════════════════
+
+services_inventory_api_down() {
+  mkdir -p /etc/inventory-api
+  cat > /usr/local/bin/inventory-api <<'EOF'
+#!/bin/bash
+set -u
+if [[ -z ${PORT:-} ]]; then
+  echo "FATAL inventory-api: PORT is unset; refusing to start" >&2
+  exit 78
+fi
+echo "inventory-api: listening on port $PORT"
+while true; do
+  echo "inventory-api: heartbeat"
+  sleep 15
+done
+EOF
+  chmod 755 /usr/local/bin/inventory-api
+
+  # The deployment wrote the wrong variable name. The unit can read the file,
+  # but the process exits immediately and systemd keeps retrying it.
+  cat > /etc/inventory-api/service.env <<'EOF'
+PORT_NUMBER=8088
+EOF
+  chown root:app /etc/inventory-api/service.env
+  chmod 640 /etc/inventory-api/service.env
+
+  cat > /etc/systemd/system/inventory-api.service <<'EOF'
+[Unit]
+Description=Inventory API
+After=network.target
+
+[Service]
+Type=simple
+User=appuser
+Group=app
+EnvironmentFile=/etc/inventory-api/service.env
+ExecStart=/usr/local/bin/inventory-api
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -s /etc/systemd/system/inventory-api.service \
+    /etc/systemd/system/multi-user.target.wants/inventory-api.service
+}
+
 # ══ live processes: started at first interactive shell ═════════════
 
 install_live_launcher() {
@@ -255,9 +308,6 @@ install_live_launcher() {
 # devops_gym: fabricate live incident processes, once per container.
 if [ ! -e /tmp/.gym-live ]; then
   touch /tmp/.gym-live
-  # No PAM login under docker exec, so /etc/motd never self-displays.
-  # First interactive shell is the "login": show the handover note.
-  [ -r /etc/motd ] && cat /etc/motd
   nohup /usr/local/bin/traffic-writer  >/dev/null 2>&1 &
   nohup /usr/local/bin/svc-wrapper     >/dev/null 2>&1 &
   nohup /usr/local/bin/zombie-maker    >/dev/null 2>&1 &
@@ -312,6 +362,7 @@ main() {
   users_perm_meltdown
   processes_log_flood
   processes_immortal_daemon
+  services_inventory_api_down
   install_live_launcher
   install_disk_bloat_launcher
 }

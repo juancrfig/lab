@@ -13,6 +13,8 @@ Forensics, without modifying any evidence:
 2. Isolate the files modified strictly inside the incident window. Tip:
    you can fabricate reference files carrying any timestamp you want, and
    compare against them.
+   Also produce separate evidence sets selected by name pattern, regular
+   expression, file type, and size so the response is reproducible.
 3. One planted file masquerades as an image. Prove what it actually is,
    and append the proof plus the full list of planted paths to
    `~/timeline.txt`.

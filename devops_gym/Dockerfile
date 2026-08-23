@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN rm -f /etc/dpkg/dpkg.cfg.d/excludes \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-       sudo procps psmisc file adduser man-db manpages \
+       sudo procps psmisc file adduser man-db manpages systemd systemd-sysv dbus \
        less vim curl wget ca-certificates bash-completion \
        iproute2 dnsutils tmux cron \
     && dpkg-divert --remove /usr/bin/man \
@@ -24,4 +24,5 @@ RUN chmod +x /setup.sh && /setup.sh
 USER juanes
 WORKDIR /home/juanes
 
-CMD ["/bin/bash"]
+STOPSIGNAL SIGRTMIN+3
+CMD ["/sbin/init"]
